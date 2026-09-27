@@ -1,0 +1,24 @@
+# Netlify: deploys the static dashboard in /frontend.
+# Set LOGWATCH_API (e.g. https://logwatch-api.onrender.com) in Site settings -> Environment variables.
+[build]
+  base    = "frontend"
+  publish = "."
+  command = "printf 'window.LOGWATCH_API = \"%s\";\\n' \"$LOGWATCH_API\" > config.js && cat config.js"
+
+[[redirects]]
+  from = "/phone"
+  to = "/phone.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/config.js"
+  [headers.values]
+    Cache-Control = "no-cache"

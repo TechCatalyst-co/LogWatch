@@ -1,0 +1,20 @@
+# title: Case 3 - "Why is my battery dying overnight?"
+# source: phone
+# device: Jamie's phone (Pixel 8)
+# card: Jamie is 16. Last week Jamie installed a free flashlight app after the old one "stopped working". Jamie uses Snapchat and Maps a lot and checks the weather every morning.
+# pace: 1.0
+{DATE} 19:20:04 app=Snapchat permission=CAMERA duration=4m12s
+{DATE} 19:26:40 app=Google Maps permission=LOCATION duration=18m
+{DATE} 22:48:13 app=Bright Flashlight Pro permission=CAMERA duration=2m
+{DATE} 23:15:00 app=Weather Now permission=LOCATION duration=2s
+{DATE} 00:15:00 app=Weather Now permission=LOCATION duration=2s
+{DATE} 01:12:44 app=Bright Flashlight Pro permission=MICROPHONE duration=38s
+{DATE} 01:13:02 app=Bright Flashlight Pro permission=LOCATION duration=3s
+{DATE} 01:15:00 app=Weather Now permission=LOCATION duration=2s
+{DATE} 02:12:40 app=Bright Flashlight Pro permission=MICROPHONE duration=41s
+{DATE} 02:12:59 app=Bright Flashlight Pro permission=CONTACTS duration=1s
+{DATE} 02:15:00 app=Weather Now permission=LOCATION duration=2s
+{DATE} 03:12:37 app=Bright Flashlight Pro permission=MICROPHONE duration=40s
+{DATE} 03:33:10 app=Spotify permission=MICROPHONE duration=1s
+{DATE} 04:12:41 app=Bright Flashlight Pro permission=MICROPHONE duration=39s
+{DATE} 07:02:15 app=Snapchat permission=MICROPHONE duration=22s

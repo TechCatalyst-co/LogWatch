@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>LogWatch · Send from your phone</title>
+<style>
+:root{--bg:#0e1116;--panel:#161a21;--p2:#1c212a;--line:#2b323d;--ink:#f3f4f6;--ink2:#b8bec9;--ink3:#7d8594;--acc:#1f6fd1;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+.wrap{max-width:520px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px}
+p.sub{color:var(--ink3);margin:0 0 16px;font-size:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 4px}
+.card p{color:var(--ink2);font-size:14px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--ink3);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--ink);font:inherit}
+textarea{min-height:110px;font:13px ui-monospace,Consolas,monospace}
+.perms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.perms button,.when button{padding:11px 6px;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--ink);font:inherit;font-size:14px}
+.perms button.on,.when button.on{background:var(--acc);border-color:var(--acc)}
+.when{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.go{width:100%;margin-top:14px;padding:14px;border-radius:12px;border:0;background:var(--acc);color:#fff;font:600 16px system-ui}
+.res{margin-top:12px;padding:12px;border-radius:10px;background:var(--p2);display:none;font-size:14px}
+.res b{display:block;margin-bottom:2px}
+.l0{border-left:4px solid #0ca30c}.l1{border-left:4px solid #3987e5}.l2{border-left:4px solid #fab219}.l3{border-left:4px solid #d03b3b}
+details{color:var(--ink2);font-size:14px}
+details summary{cursor:pointer;color:var(--ink)}
+small{color:var(--ink3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Send a log to the big screen</h1>
+  <p class="sub">Nothing is read from your phone automatically. You choose exactly what to send, and it only goes to the booth dashboard.</p>
+
+  <div class="card">
+    <h2>1 · Check your phone's privacy log</h2>
+    <details><summary>Where do I find it?</summary>
+      <p style="margin-top:8px"><b>Android 12+:</b> Settings → Security &amp; privacy → Privacy → <b>Privacy dashboard</b>. Tap Location, Camera or Microphone to see which apps used it and when.<br>
+      <b>iPhone:</b> Settings → Privacy &amp; Security → <b>App Privacy Report</b> (turn it on, it fills in over a few days). The orange/green dot at the top of the screen means mic/camera is in use right now.</p>
+    </details>
+    <label for="name">Your first name (optional)</label>
+    <input id="name" placeholder="e.g. Alex" maxlength="24" autocomplete="off">
+    <label for="app">Which app?</label>
+    <input id="app" list="apps" placeholder="Type or pick an app" maxlength="40" autocomplete="off">
+    <datalist id="apps"><option>Google Maps</option><option>Weather</option><option>Instagram</option><option>TikTok</option><option>Snapchat</option><option>WhatsApp</option><option>Spotify</option><option>Facebook</option><option>Flashlight</option><option>Calculator</option><option>QR Scanner</option><option>Uber</option><option>DoorDash</option><option>Zoom</option></datalist>
+    <label>Used which permission?</label>
+    <div class="perms" id="perms">
+      <button data-p="LOCATION" class="on">Location</button><button data-p="MICROPHONE">Microphone</button><button data-p="CAMERA">Camera</button>
+      <button data-p="CONTACTS">Contacts</button><button data-p="SMS">Messages</button><button data-p="CALL_LOG">Call log</button>
+    </div>
+    <label>When?</label>
+    <div class="when" id="when"><button data-w="now" class="on">Recently</button><button data-w="night">Overnight (2 AM)</button></div>
+    <button class="go" id="send">Send to the dashboard</button>
+    <div class="res" id="res"></div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Paste any log (advanced)</h2>
+    <p>Copied lines from a router admin page, Windows Event Viewer or a Raspberry Pi? Paste them here, one per line.</p>
+    <select id="src"><option value="">Let LogWatch guess the type</option><option value="router">Router</option><option value="windows">Windows</option><option value="phone">Phone</option><option value="browser">Browser history</option><option value="linux">Linux / Raspberry Pi</option></select>
+    <textarea id="paste" placeholder="Sep 27 02:05:02 router uhttpd: luci: failed login for admin from 185.220.101.47"></textarea>
+    <button class="go" id="sendPaste">Send lines</button>
+    <div class="res" id="res2"></div>
+  </div>
+  <small>Part of "You vs. the Machine" · Connected lives, Protected futures</small>
+</div>
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const API=(window.LOGWATCH_API||"").replace(/\/$/,"");
+const KEY=new URLSearchParams(location.search).get("k")||"";
+if(!KEY) document.addEventListener("DOMContentLoaded",()=>{ $("send").disabled=$("sendPaste").disabled=true; $("res").style.display="block"; $("res").textContent="This link is missing its booth key. Scan the QR code at the booth to get the right link."; });
+let perm="LOCATION", when="now";
+$("perms").onclick=e=>{const b=e.target.closest("button"); if(!b) return; perm=b.dataset.p; [...$("perms").children].forEach(x=>x.classList.toggle("on",x===b));};
+$("when").onclick=e=>{const b=e.target.closest("button"); if(!b) return; when=b.dataset.w; [...$("when").children].forEach(x=>x.classList.toggle("on",x===b));};
+const clean=s=>s.replace(/[=\n\r]/g," ").trim();
+async function send(body, q, out){
+  out.style.display="block"; out.className="res"; out.textContent="Sending…";
+  try{
+    const r=await fetch(`${API}/api/ingest?${q}`,{method:"POST",headers:{"Content-Type":"text/plain","X-Ingest-Key":KEY},body});
+    const d=await r.json(); if(!r.ok) throw new Error(d.error||r.status);
+    const v=d.verdicts||[]; const lv=["Normal","FYI","Worth a look","Act now"];
+    const top=v.reduce((a,b)=>lv.indexOf(b.level)>lv.indexOf(a.level)?b:a, v[0]||{level:"Normal",title:"Received"});
+    out.className="res l"+lv.indexOf(top.level);
+    out.innerHTML=`<b>${esc(top.level)}: ${esc(top.title)}</b>Look up at the big screen. ${v.length>1?esc(v.length)+" lines received.":""}`;
+  }catch(err){ out.textContent="Couldn't send ("+err.message+"). Check your connection and try again."; }
+}
+$("send").onclick=()=>{
+  const app=clean($("app").value)||"Unknown app", nm=clean($("name").value);
+  const d=new Date(); if(when==="night") d.setHours(2,Math.floor(Math.random()*59),12);
+  const p=n=>String(n).padStart(2,"0");
+  const line=`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())} app=${app} permission=${perm} duration=12s`;
+  send(line, `source=phone&device=${encodeURIComponent((nm?nm+"'s":"Visitor")+" phone")}`, $("res"));
+};
+$("sendPaste").onclick=()=>{
+  const t=$("paste").value.trim(); if(!t) return;
+  const nm=clean($("name").value);
+  send(t, `device=${encodeURIComponent((nm?nm+"'s ":"Visitor ")+($("src").value||"device"))}${$("src").value?"&source="+$("src").value:""}`, $("res2"));
+};
+</script>
+</body>
+</html>

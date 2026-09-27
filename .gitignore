@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+logs/
+logwatch-export.json
+.DS_Store
+/.idea

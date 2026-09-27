@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LogWatch · You vs. the Machine</title>
+<style>
+:root{
+  --bg:#0e1116; --panel:#161a21; --panel-2:#1c212a; --line:#272d38; --line-2:#323a47;
+  --ink:#f3f4f6; --ink-2:#b8bec9; --ink-3:#7d8594;
+  --accent:#5aa9ff;
+  --l0:#0ca30c; --l1:#3987e5; --l2:#fab219; --l3:#d03b3b;
+  --l0-bg:rgba(12,163,12,.14); --l1-bg:rgba(57,135,229,.16); --l2-bg:rgba(250,178,25,.16); --l3-bg:rgba(208,59,59,.2);
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans)}
+button,select{font:inherit;color:inherit}
+.app{display:grid;grid-template-rows:auto auto 1fr;height:100vh;gap:14px;padding:14px 18px 16px}
+
+/* ---------- header */
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;min-width:0}
+.mark{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1f6fd1,#5aa9ff);display:grid;place-items:center;flex:none}
+.brand h1{margin:0;font-size:20px;letter-spacing:.2px;white-space:nowrap}
+.brand h1 span{color:var(--ink-3);font-weight:500}
+.brand p{margin:1px 0 0;color:var(--ink-3);font-size:12.5px;white-space:nowrap}
+.live{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--l0);box-shadow:0 0 0 0 rgba(12,163,12,.6);animation:pulse 2s infinite}
+.dot.off{background:var(--l3);animation:none}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(12,163,12,0)}100%{box-shadow:0 0 0 0 rgba(12,163,12,0)}}
+.playing{padding:5px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink-2);font-size:12.5px;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playing b{color:var(--ink)}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--panel-2);border:1px solid var(--line-2);padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:#1f6fd1;border-color:#1f6fd1}
+.btn.primary:hover{background:#2a7be0}
+.btn.on{background:#3a2c07;border-color:var(--l2);color:#ffd67a}
+select.btn{padding-right:28px}
+
+/* ---------- KPIs */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi .lab{color:var(--ink-3);font-size:12px;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:7px}
+.kpi .val{font-size:34px;font-weight:650;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi .sub{color:var(--ink-3);font-size:12px}
+.kpi.l3 .val{color:#ff7b7b} .kpi.l2 .val{color:#ffc94d}
+.kpi.l3.hot{border-color:var(--l3);background:linear-gradient(180deg,rgba(208,59,59,.14),var(--panel))}
+
+/* ---------- main grid */
+main{display:grid;grid-template-columns:300px minmax(0,1fr) 420px;gap:14px;min-height:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.phead{display:flex;align-items:center;gap:10px;padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+.phead h2{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:.7px;color:var(--ink-2);font-weight:600}
+.phead .aside{margin-left:auto;color:var(--ink-3);font-size:12px}
+.scroll{overflow:auto;min-height:0;flex:1}
+.scroll::-webkit-scrollbar{width:8px}.scroll::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:8px}
+
+/* devices */
+.dev{display:flex;gap:11px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
+.dev:hover{background:var(--panel-2)} .dev.sel{background:#1a2433;box-shadow:inset 3px 0 0 var(--accent)}
+.dev .ico{width:34px;height:34px;border-radius:9px;background:var(--panel-2);border:1px solid var(--line-2);display:grid;place-items:center;flex:none;color:var(--ink-2)}
+.dev .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dev .meta{color:var(--ink-3);font-size:12px}
+.dev .st{margin-left:auto;flex:none}
+.join{padding:12px 14px;color:var(--ink-3);font-size:12px;border-top:1px solid var(--line);line-height:1.5}
+.join code{color:var(--ink);font:12px var(--mono);word-break:break-all}
+
+/* level chips */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px 2px 4px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.chip i{width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:#0e1116}
+.c0{background:var(--l0-bg);color:#7fdc7f}.c0 i{background:var(--l0)}
+.c1{background:var(--l1-bg);color:#9cc7ff}.c1 i{background:var(--l1);color:#fff}
+.c2{background:var(--l2-bg);color:#ffd67a}.c2 i{background:var(--l2)}
+.c3{background:var(--l3-bg);color:#ff9a9a}.c3 i{background:var(--l3);color:#fff}
+
+/* feed */
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.f{padding:3px 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;cursor:pointer;font-size:12px;color:var(--ink-2)}
+.f.on{background:var(--ink);color:#0e1116;border-color:var(--ink)}
+.row{display:grid;grid-template-columns:64px 118px minmax(0,1fr);gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;align-items:start}
+.row:hover{background:var(--panel-2)}
+.row.new{animation:flash 1.6s ease-out}
+.row.lv3{box-shadow:inset 3px 0 0 var(--l3)} .row.lv2{box-shadow:inset 3px 0 0 var(--l2)}
+@keyframes flash{from{background:#22324a}to{background:transparent}}
+.row .tm{font:12.5px var(--mono);color:var(--ink-3);padding-top:2px;font-variant-numeric:tabular-nums}
+.row .ttl{font-weight:600}
+.row .ttl .src{color:var(--ink-3);font-weight:500;font-size:12px;margin-left:6px}
+.row .pl{color:var(--ink-2);font-size:13px;margin-top:2px}
+.row .rw{font:12px/1.5 var(--mono);color:#9aa3b2;background:#0b0e12;border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin-top:7px;white-space:pre-wrap;word-break:break-all;display:none}
+.row .adv{margin-top:7px;font-size:13px;color:#cfe3ff;display:none}
+.row.open .rw,.row.open .adv{display:block}
+.corr{font-size:11px;background:#3b1f4a;color:#e6b8ff;border-radius:4px;padding:1px 6px;margin-left:6px;font-weight:600;vertical-align:1px}
+.empty{padding:40px 20px;text-align:center;color:var(--ink-3)}
+.empty b{display:block;color:var(--ink-2);font-size:15px;margin-bottom:6px}
+
+/* right column */
+.right{display:grid;grid-template-rows:minmax(0,1.35fr) auto;gap:14px;min-height:0}
+.alert{padding:12px 14px;border-bottom:1px solid var(--line)}
+.alert .top{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.alert .ttl{font-weight:650;line-height:1.3}
+.alert .n{margin-left:auto;color:var(--ink-3);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.alert .dv{color:var(--ink-3);font-size:12px}
+.alert .ad{margin-top:6px;font-size:13px;color:#cfe3ff;display:flex;gap:7px}
+.alert .ad:before{content:"→";color:var(--accent);font-weight:700}
+.charts{padding:12px 14px 14px;display:flex;flex-direction:column;gap:14px}
+.ch h3{margin:0 0 6px;font-size:12px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.6px;display:flex;gap:10px;align-items:center}
+.legend{display:flex;gap:10px;margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500}
+.legend span{display:inline-flex;align-items:center;gap:4px;color:var(--ink-2)}
+.legend span:before{content:"";width:9px;height:9px;border-radius:2px;background:var(--c)}
+svg text{fill:var(--ink-3);font:11px var(--sans)}
+.cat{display:grid;grid-template-columns:70px 1fr 34px;align-items:center;gap:8px;font-size:12.5px;margin:4px 0}
+.cat .bar{height:12px;background:var(--panel-2);border-radius:3px;overflow:hidden;display:flex;gap:2px}
+.cat .bar b{display:block;height:100%}
+.cat .bar b:first-child{border-radius:3px 0 0 3px}.cat .bar b:last-child{border-radius:0 4px 4px 0}
+.cat .v{text-align:right;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.tip{position:fixed;pointer-events:none;background:#0b0e12;border:1px solid var(--line-2);border-radius:8px;padding:7px 10px;font-size:12px;z-index:50;display:none;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+
+/* challenge mode */
+body.challenge .verdict{filter:blur(7px) grayscale(1);opacity:.55;user-select:none;pointer-events:none}
+body.challenge .row{box-shadow:none!important}
+body.challenge .kpi.hot{border-color:var(--line);background:var(--panel)}
+body.challenge .row .rw{display:block}
+body.challenge .row .pl,body.challenge .row .adv{display:none}
+body.challenge .hidewrap{position:relative}
+.hidden-note{display:none}
+body.challenge .hidden-note{display:flex;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:rgba(14,17,22,.72);z-index:2;text-align:center;padding:20px}
+.hidden-note b{font-size:18px}
+.banner{display:none}
+body.challenge .banner{display:flex;align-items:center;gap:10px;background:#3a2c07;border:1px solid var(--l2);color:#ffd67a;border-radius:10px;padding:8px 14px;font-weight:600}
+
+.sheet pre{font:12.5px/1.5 var(--mono);background:#0b0e12;border:1px solid var(--line);border-radius:6px;padding:8px 10px;white-space:pre-wrap;word-break:break-all;color:#cfd6e2;margin:6px 0 12px}
+
+/* read-only viewers */
+body.readonly .controls .btn:not(#bChallenge){display:none}
+body.readonly .join{display:none}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(5,7,10,.72);display:none;align-items:center;justify-content:center;z-index:40;padding:20px}
+.modal.show{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line-2);border-radius:14px;max-width:760px;width:100%;max-height:88vh;display:flex;flex-direction:column}
+.sheet .phead{padding:16px 18px}
+.sheet .body{padding:18px 22px;overflow:auto;font-size:15.5px;line-height:1.6}
+.sheet .body h3{margin:0 0 10px;font-size:19px}
+.sheet .body ul,.sheet .body ol{padding-left:22px}
+.sheet .body li{margin:5px 0}
+.note{background:var(--panel-2);border:1px solid var(--line-2);border-radius:8px;padding:8px 12px;color:var(--ink-2);font-size:13px;margin-bottom:12px}
+.card{background:#fffbea;color:#2a2410;border-radius:10px;padding:18px 20px;font-size:17px;line-height:1.55;box-shadow:0 2px 0 #d9cf9a}
+.card small{display:block;color:#7a6a2a;font-size:12px;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;font-weight:700}
+.cases{display:grid;gap:10px}
+.case{display:flex;gap:12px;align-items:center;padding:12px 14px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:10px}
+.case .t{font-weight:650}.case .d{color:var(--ink-3);font-size:12.5px}
+.case .btns{margin-left:auto;display:flex;gap:6px;flex:none}
+
+@media (max-width:1280px){ main{grid-template-columns:240px minmax(0,1fr) 340px} .kpi .val{font-size:28px} }
+@media (max-width:980px){
+  .app{height:auto} main{grid-template-columns:1fr} .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .panel{max-height:70vh} .brand p,.brand h1{white-space:normal}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8 12h2l1.5-3 2 6 1.5-3h1"/></svg>
+      </div>
+      <div>
+        <h1>LogWatch <span>· You vs. the Machine</span></h1>
+        <p>Connected lives, Protected futures — what your devices are quietly writing down</p>
+      </div>
+    </div>
+    <div class="playing" id="playing" title="What's feeding the dashboard"><b>Idle</b> · waiting for logs</div>
+    <div class="controls">
+      <button class="btn primary" id="bCases">Cases</button>
+      <button class="btn" id="bNoise" title="Harmless background traffic so the screen looks alive">Background</button>
+      <button class="btn" id="bChallenge" title="Hide the verdicts so visitors can guess first">Challenge mode</button>
+      <button class="btn" id="bDigest">Digest</button>
+      <button class="btn" id="bAI">Ask AI</button>
+      <button class="btn" id="bStop">Stop</button>
+      <button class="btn" id="bReset">Reset</button>
+    </div>
+    <div class="live"><span class="dot" id="dot"></span><span id="clock">--:--:--</span></div>
+  </header>
+
+  <section>
+    <div class="banner" id="banner">Challenge mode: verdicts are hidden. Read the raw logs, fill in your scorecard, then press <u>Reveal</u>.
+      <button class="btn" id="bReveal" style="margin-left:auto">Reveal answers</button></div>
+    <div class="kpis" id="kpis" style="margin-top:0"></div>
+  </section>
+
+  <main>
+    <div class="panel">
+      <div class="phead"><h2>Devices</h2><span class="aside" id="devCount">0</span></div>
+      <div class="scroll" id="devices"></div>
+      <div class="join"><button class="btn primary" id="bConnect" style="width:100%">Connect devices &amp; phones</button></div>
+    </div>
+
+    <div class="panel">
+      <div class="phead">
+        <h2>Live log feed</h2>
+        <div class="filters" id="filters" style="margin-left:10px"></div>
+        <span class="aside" id="feedNote"></span>
+      </div>
+      <div class="scroll" id="feed"></div>
+    </div>
+
+    <div class="right">
+      <div class="panel hidewrap">
+        <div class="hidden-note"><b>Answers hidden</b><span style="color:var(--ink-2)">What would you tell this person to do?</span></div>
+        <div class="phead"><h2>What to do next</h2><span class="aside" id="alertCount"></span></div>
+        <div class="scroll verdict" id="alerts"></div>
+      </div>
+      <div class="panel hidewrap">
+        <div class="hidden-note"><b>Hidden</b></div>
+        <div class="charts verdict">
+          <div class="ch">
+            <h3>Activity · last 10 min
+              <span class="legend"><span style="--c:var(--l0)">Normal</span><span style="--c:var(--l1)">FYI</span><span style="--c:var(--l2)">Look</span><span style="--c:var(--l3)">Act</span></span>
+            </h3>
+            <svg id="timeline" width="100%" height="120" role="img" aria-label="Logs per 20 seconds, stacked by verdict"></svg>
+          </div>
+          <div class="ch"><h3>By category</h3><div id="cats"></div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<div class="modal" id="login" role="dialog" aria-modal="true" aria-labelledby="lTitle">
+  <form class="sheet" id="lForm" style="max-width:380px">
+    <div class="phead"><h2 id="lTitle">Booth operator sign-in</h2></div>
+    <div class="body">
+      <label for="lPass" style="display:block;color:var(--ink-3);font-size:13px;margin-bottom:6px">Password</label>
+      <input id="lPass" type="password" autocomplete="current-password" required
+        style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font:inherit">
+      <button class="btn primary" style="width:100%;margin-top:12px">Sign in</button>
+      <p id="lMsg" style="color:var(--ink-2);font-size:13px;min-height:20px"></p>
+    </div>
+  </form>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="phead"><h2 id="mTitle">Digest</h2><button class="btn" style="margin-left:auto" id="mClose">Close</button></div>
+    <div class="body" id="mBody"></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script>
+const LEVELS = ["Normal","FYI","Worth a look","Act now"];
+const GLYPH = ["✓","i","!","▲"];
+const CAT_ORDER = ["Sign-in","Network","Privacy","Web","System"];
+const ICONS = {
+  router:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 16.5h.01M11 16.5h.01M8 9a6 6 0 0 1 8 0M5.5 6.5a10 10 0 0 1 13 0"/></svg>',
+  windows:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+  phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18h2"/></svg>',
+  browser:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+  linux:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M12 15h5"/></svg>'
+};
+const SRC_NAME = {router:"Router",windows:"Windows",phone:"Phone",browser:"Browser",linux:"Linux"};
+
+const S = { seen: new Set(), events: [], devices: {}, filter: "all", device: null, challenge: false, noise: false, lastIds: new Set() };
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const chip = l => `<span class="chip c${l}"><i>${GLYPH[l]}</i>${LEVELS[l]}</span>`;
+const hhmm = ts => new Date(ts*1000).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+const ago = ts => { const s = Math.max(0, Date.now()/1000 - ts); return s<60 ? `${s|0}s ago` : s<3600 ? `${(s/60)|0}m ago` : `${(s/3600)|0}h ago`; };
+
+// ------------------------------------------------------------------ rendering
+function renderKPIs(){
+  const c=[0,0,0,0]; S.events.forEach(e=>c[e.level]++);
+  const n = S.events.length, devs = Object.keys(S.devices).length;
+  const pct = n ? Math.round(100*c[0]/n) : 0;
+  const t = (cls,lab,val,sub,l) => `<div class="kpi ${cls}"><div class="lab">${l!=null?`<span class="chip c${l}" style="padding:0"><i>${GLYPH[l]}</i></span>`:""}${lab}</div><div class="val">${val}</div><div class="sub">${sub}</div></div>`;
+  $("kpis").innerHTML =
+    t("","Logs read",n.toLocaleString(),"lines translated into plain English") +
+    t("","Devices reporting",devs,"routers, PCs, phones, browsers") +
+    t("","Normal",c[0],`${pct}% everyday housekeeping · ${c[1]} FYI`,0) +
+    t("l2","Worth a look",c[2],"odd, but may have an innocent reason",2) +
+    t("l3"+(c[3]?" hot":""),"Act now",c[3],"do something about these today",3);
+  // verdict tiles are part of the answer in challenge mode
+  [...$("kpis").children].slice(2).forEach(k=>k.classList.add("verdict"));
+}
+
+function renderDevices(){
+  const list = Object.values(S.devices).sort((a,b)=>b.worst-a.worst || b.last-a.last);
+  $("devCount").textContent = list.length;
+  $("devices").innerHTML = list.length ? list.map(d=>`
+    <div class="dev ${S.device===d.name?"sel":""}" data-dev="${esc(d.name)}">
+      <div class="ico">${ICONS[d.source]||ICONS.linux}</div>
+      <div style="min-width:0">
+        <div class="nm">${esc(d.name)}</div>
+        <div class="meta">${SRC_NAME[d.source]||d.source} · ${d.count} logs · ${ago(d.last)}</div>
+      </div>
+      <div class="st verdict" title="${LEVELS[d.worst]}"><span class="chip c${d.worst}" style="padding:3px"><i>${GLYPH[d.worst]}</i></span></div>
+    </div>`).join("") : `<div class="empty"><b>No devices yet</b>Press <u>Cases</u> to play a scenario, or point a router at this laptop.</div>`;
+}
+
+function passes(e){
+  if (S.device && e.device !== S.device) return false;
+  if (S.filter === "all") return true;
+  if (S.filter === "alerts") return e.level >= 2;
+  return e.source === S.filter;
+}
+
+function rowHTML(e, isNew){
+  return `<div class="row lv${e.level} ${isNew?"new":""}" data-id="${e.id}">
+    <div class="tm">${hhmm(e.ts)}</div>
+    <div class="verdict">${chip(e.level)}</div>
+    <div style="min-width:0">
+      <div class="ttl"><span class="verdict">${esc(e.title)}</span>${e.correlated?'<span class="corr verdict">PATTERN</span>':""}<span class="src">${esc(e.device)}</span></div>
+      <div class="pl">${esc(e.plain)}</div>
+      ${e.advice?`<div class="adv">→ ${esc(e.advice)}</div>`:""}
+      <div class="rw">${esc(e.raw)}</div>
+    </div></div>`;
+}
+
+function renderFeed(newIds){
+  const vis = S.events.filter(passes).slice(-250).reverse();
+  $("feed").innerHTML = vis.length ? vis.map(e=>rowHTML(e, newIds && newIds.has(e.id))).join("")
+    : `<div class="empty"><b>Waiting for logs…</b>Every line a device writes will appear here, translated.</div>`;
+  $("feedNote").textContent = S.device ? `showing ${S.device}` : "";
+}
+
+function renderFilters(){
+  const srcs = [...new Set(S.events.map(e=>e.source))];
+  const opts = [["all","All"],["alerts","Worth a look +"],...srcs.map(s=>[s,SRC_NAME[s]||s])];
+  $("filters").innerHTML = opts.map(([k,l])=>`<button class="f ${S.filter===k?"on":""}" data-f="${k}">${l}</button>`).join("")
+    + (S.device?`<button class="f on" data-clear="1">✕ ${esc(S.device)}</button>`:"");
+}
+
+function renderAlerts(){
+  const groups = new Map();
+  S.events.filter(e=>e.level>=2 && (!S.device || e.device===S.device)).forEach(e=>{
+    const k = e.device+"|"+e.title;
+    const g = groups.get(k) || {e, n:0, last:0};
+    g.n++; if (e.rx>=g.last){g.last=e.rx; g.e=e;} groups.set(k,g);
+  });
+  const list=[...groups.values()].sort((a,b)=>b.e.level-a.e.level || b.last-a.last).slice(0,12);
+  $("alertCount").textContent = groups.size ? `${groups.size} issue${groups.size>1?"s":""}` : "";
+  $("alerts").innerHTML = list.length ? list.map(({e,n})=>`
+    <div class="alert">
+      <div class="top">${chip(e.level)}${e.correlated?'<span class="corr">PATTERN</span>':""}<span class="n">${n>1?`×${n} · `:""}${hhmm(e.ts)}</span></div>
+      <div class="ttl">${esc(e.title)}</div>
+      <div class="dv">${esc(e.device)}</div>
+      ${e.advice?`<div class="ad">${esc(e.advice)}</div>`:""}
+    </div>`).join("") : `<div class="empty"><b>All quiet</b>Anything worth your attention shows up here with a next step.</div>`;
+}
+
+const COLORS = ["var(--l0)","var(--l1)","var(--l2)","var(--l3)"];
+function renderTimeline(){
+  const svg=$("timeline"), W=svg.clientWidth||380, H=120, pad={l:26,r:4,t:6,b:18};
+  const B=30, span=20, now=Date.now()/1000, start=now-B*span;
+  const bins=[...Array(B)].map(()=>[0,0,0,0]);
+  S.events.forEach(e=>{ if(e.rx>=start && (!S.device||e.device===S.device)){ const i=Math.min(B-1,((e.rx-start)/span)|0); bins[i][e.level]++; }});
+  const mx=Math.max(4,...bins.map(b=>b[0]+b[1]+b[2]+b[3]));
+  const nice=Math.ceil(mx/4)*4, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b, bw=iw/B;
+  let g="";
+  [0,nice/2,nice].forEach(v=>{const y=pad.t+ih-ih*v/nice; g+=`<line x1="${pad.l}" x2="${W-pad.r}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${pad.l-6}" y="${y+3.5}" text-anchor="end">${v}</text>`;});
+  bins.forEach((b,i)=>{
+    let y=pad.t+ih; const x=pad.l+i*bw+1.5, w=Math.max(2,bw-3);
+    const segs=b.map((v,l)=>[v,l]).filter(([v])=>v>0);
+    segs.forEach(([v,l],k)=>{
+      const h=ih*v/nice, top=k===segs.length-1, gap=k? 2:0;
+      y-=h; const hh=Math.max(1,h-gap);
+      g+= top ? `<path d="M${x},${y+hh} v${-(hh-Math.min(3,hh))} q0,-${Math.min(3,hh)} ${Math.min(3,w/2)},-${Math.min(3,hh)} h${w-2*Math.min(3,w/2)} q${Math.min(3,w/2)},0 ${Math.min(3,w/2)},${Math.min(3,hh)} v${hh-Math.min(3,hh)} z" fill="${COLORS[l]}"/>`
+              : `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="${COLORS[l]}"/>`;
+    });
+    g+=`<rect class="hit" data-i="${i}" x="${pad.l+i*bw}" y="${pad.t}" width="${bw}" height="${ih}" fill="transparent"/>`;
+  });
+  g+=`<text x="${pad.l}" y="${H-3}">−10 min</text><text x="${W-pad.r}" y="${H-3}" text-anchor="end">now</text>`;
+  svg.innerHTML=g; svg._bins=bins; svg._start=start; svg._span=span;
+}
+
+function renderCats(){
+  const m={}; S.events.forEach(e=>{ if(!S.device||e.device===S.device){ (m[e.category]??=[0,0,0,0])[e.level]++; }});
+  const cats=CAT_ORDER.filter(c=>m[c]); const mx=Math.max(1,...cats.map(c=>m[c].reduce((a,b)=>a+b)));
+  $("cats").innerHTML = cats.length ? cats.map(c=>{const t=m[c].reduce((a,b)=>a+b);
+    return `<div class="cat" data-cat="${c}"><span>${c}</span><div class="bar"><div style="display:flex;gap:2px;width:${100*t/mx}%">${m[c].map((v,l)=>v?`<b style="flex:${v};background:${COLORS[l]}"></b>`:"").join("")}</div></div><span class="v">${t}</span></div>`}).join("")
+    : `<div style="color:var(--ink-3);font-size:12.5px">No data yet</div>`;
+  $("cats")._m=m;
+}
+
+function renderAll(newIds){ renderKPIs(); renderDevices(); renderFilters(); renderFeed(newIds); renderAlerts(); renderTimeline(); renderCats(); }
+
+// ------------------------------------------------------------------ live data
+let pending=[], timer=null;
+function queueEvent(e){ if(S.seen.has(e.id)) return; S.seen.add(e.id); pending.push(e); if(!timer) timer=setTimeout(flush,250); }
+function flush(){
+  timer=null; if(!pending.length) return;
+  const ids=new Set(pending.map(e=>e.id));
+  for(const e of pending){
+    S.events.push(e);
+    const d = S.devices[e.device] ??= {name:e.device, source:e.source, count:0, worst:0, last:0};
+    d.count++; d.last=e.rx; d.worst=Math.max(d.worst,e.level);
+  }
+  if(S.events.length>3000) S.events=S.events.slice(-3000);
+  pending=[]; renderAll(ids);
+}
+
+// ------------------------------------------------------------------ server + login
+const API = (window.LOGWATCH_API || "").replace(/\/$/, "");
+let TOKEN = (()=>{ try{ return localStorage.getItem("lw_token")||""; }catch{ return ""; } })();
+let READONLY = false;
+function saveToken(t){ TOKEN=t; try{ t?localStorage.setItem("lw_token",t):localStorage.removeItem("lw_token"); }catch{} }
+async function api(path, opts={}){
+  const r = await fetch(API+path, {...opts, headers:{...(opts.headers||{}), ...(TOKEN?{Authorization:"Bearer "+TOKEN}:{})}});
+  if(r.status===401){ saveToken(""); showLogin("Your session expired. Please sign in again."); throw new Error("login required"); }
+  const d = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(d.error || ("HTTP "+r.status));
+  return d;
+}
+const post = (u) => api(u,{method:"POST"});
+
+function showLogin(msg){
+  $("login").classList.add("show"); $("lMsg").textContent = msg||""; setTimeout(()=>$("lPass").focus(),50);
+}
+$("lForm").onsubmit = async e=>{
+  e.preventDefault(); $("lMsg").textContent="Signing in…";
+  try{
+    const r=await fetch(API+"/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:$("lPass").value})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(d.error||"HTTP "+r.status);
+    saveToken(d.token); $("lPass").value=""; $("login").classList.remove("show"); boot();
+  }catch(err){ $("lMsg").textContent = err.message==="Failed to fetch" ? "Can't reach the server. It may be waking up (free Render plans take ~1 min). Try again." : err.message; }
+};
+
+async function load(){
+  const st = await api("/api/state");
+  S.events=st.events; S.seen=new Set(st.events.map(e=>e.id)); S.devices={}; st.devices.forEach(d=>S.devices[d.name]=d);
+  $("bAI").title = st.ai ? "Send the raw logs to Claude for an independent read" : "No API key on the server: falls back to the rule-based digest";
+  READONLY = !TOKEN; document.body.classList.toggle("readonly", READONLY);
+  setPlaying(st.now_playing); renderAll();
+}
+
+function setPlaying(p){ $("playing").innerHTML = p ? `<b>Playing</b> · ${esc(p)}` : `<b>Live</b> · listening for devices`; }
+
+let es=null, pollTimer=null, sseFails=0;
+function connect(){
+  if(es) es.close();
+  es=new EventSource(API+"/api/stream"+(TOKEN?"?token="+encodeURIComponent(TOKEN):""));
+  es.onopen=()=>{ sseFails=0; $("dot").classList.remove("off"); stopPolling(); };
+  es.onerror=()=>{ $("dot").classList.add("off"); if(++sseFails>=3) startPolling(); };
+  es.onmessage=m=>{ const d=JSON.parse(m.data);
+    if(d.type==="event") queueEvent(d.event);
+    else if(d.type==="reset"){ S.events=[]; S.seen=new Set(); S.devices={}; S.device=null; renderAll(); }
+    else if(d.type==="ping") setPlaying(d.now_playing);
+  };
+}
+// Fallback if a proxy/network blocks streaming: poll every 3 s.
+function startPolling(){ if(pollTimer) return; pollTimer=setInterval(async()=>{
+  try{ const st=await api("/api/state"); $("dot").classList.remove("off"); setPlaying(st.now_playing);
+    if(st.total < S.events.length){ S.events=[]; S.seen=new Set(); S.devices={}; }
+    st.events.forEach(e=>{ if(!S.seen.has(e.id)) queueEvent(e); });
+  }catch{} },3000); }
+function stopPolling(){ clearInterval(pollTimer); pollTimer=null; }
+
+async function boot(){
+  try{
+    const h = await fetch(API+"/api/health").then(r=>r.json());
+    if(!TOKEN && !h.public_view) return showLogin(h.login ? "" : "The server has no ADMIN_PASSWORD set yet.");
+    await load(); connect();
+  }catch(err){
+    if(err.message!=="login required"){ $("playing").innerHTML="<b>Offline</b> · can't reach the server, retrying…"; setTimeout(boot,5000); }
+  }
+}
+
+// connect-devices / invite phones
+$("bConnect").onclick = async ()=>{
+  let key=""; try{ key=(await api("/api/join")).ingest_key||""; }catch{}
+  const phone = new URL("phone.html", location.href); if(key) phone.searchParams.set("k", key);
+  const ingest = (API||location.origin)+"/api/ingest";
+  let qr=""; try{ const q=qrcode(0,"M"); q.addData(phone.href); q.make(); qr=q.createSvgTag({cellSize:7,margin:2}); }catch{}
+  modal("Connect devices", `
+    <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+      <div style="background:#fff;border-radius:10px;padding:6px;line-height:0">${qr||'<div style="color:#000;padding:20px;line-height:1.4">QR code needs internet</div>'}</div>
+      <div style="flex:1;min-width:240px"><h3>Visitors' phones</h3><p>Scan to open the phone page. They choose what to send; nothing is read automatically.</p><code style="word-break:break-all;font:12px var(--mono)">${esc(phone.href)}</code></div>
+    </div>
+    ${key?"":`<div class="note" style="margin-top:14px">No INGEST_KEY is set on the server, so devices can't send logs yet. Add one in Render → Environment.</div>`}
+    <h3 style="margin-top:18px">Routers, Raspberry Pis, Windows</h3>
+    <p>Cloud servers can't receive router syslog directly, so run the <b>relay</b> on the booth laptop and point devices at the laptop:</p>
+    <pre>python3 syslog_relay.py --server ${esc(API||location.origin)} --key ${esc(key||"YOUR_INGEST_KEY")}</pre>
+    <p>Windows PC (admin PowerShell):</p>
+    <pre>.\\windows_forwarder.ps1 -Server ${esc(API||location.origin)} -Key ${esc(key||"YOUR_INGEST_KEY")}</pre>
+    <p>Anything else (curl):</p>
+    <pre>curl -X POST "${esc(ingest)}?source=router&amp;device=My%20router" -H "X-Ingest-Key: ${esc(key||"YOUR_INGEST_KEY")}" --data-binary @router.log</pre>
+    <p style="margin-top:18px"><button class="btn" id="bLogout">Sign out</button> <button class="btn" id="bExport">Download all logs (JSON)</button></p>`);
+  $("bLogout").onclick=()=>{ saveToken(""); location.reload(); };
+  $("bExport").onclick=async()=>{ const r=await fetch(API+"/api/export",{headers:{Authorization:"Bearer "+TOKEN}}); const b=await r.blob();
+    const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="logwatch-export.json"; a.click(); };
+};
+
+// ------------------------------------------------------------------ controls
+function modal(title, html){ $("mTitle").textContent=title; $("mBody").innerHTML=html; $("modal").classList.add("show"); }
+$("mClose").onclick=()=>$("modal").classList.remove("show");
+$("modal").onclick=e=>{ if(e.target.id==="modal") $("modal").classList.remove("show"); };
+
+function md(t){ // tiny, safe markdown: escape first, then format
+  const lines=esc(t).split("\n"); let out="", list=null;
+  const inline=s=>s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+  for(const l of lines){
+    const ul=l.match(/^\s*[-*] (.*)/), ol=l.match(/^\s*\d+\. (.*)/);
+    const want = ul?"ul":ol?"ol":null;
+    if(list && want!==list){ out+=`</${list}>`; list=null; }
+    if(want && !list){ out+=`<${want}>`; list=want; }
+    if(ul||ol) out+=`<li>${inline((ul||ol)[1])}</li>`;
+    else if(/^###? /.test(l)) out+=`<h3>${inline(l.replace(/^#+ /,""))}</h3>`;
+    else if(l.trim()) out+=`<p>${inline(l)}</p>`;
+  }
+  return out+(list?`</${list}>`:"");
+}
+
+$("bCases").onclick=async()=>{
+  const cs=await api("/api/scenarios");
+  modal("Case library", `<div class="note">Each case is a real-life worry with a log packet. In a competition round: hand the visitor the <b>case card</b>, turn on <b>Challenge mode</b>, play the logs, then compare their scorecard with <b>Ask AI</b> and the answer key.</div>
+   <div class="cases">${cs.map(c=>`<div class="case"><div><div class="t">${esc(c.title)}</div><div class="d">${esc(c.device)} · ${c.lines} log lines</div></div>
+     <div class="btns"><button class="btn" data-card="${esc(c.id)}">Card</button><button class="btn primary" data-play="${esc(c.id)}">Play</button></div></div>`).join("")}
+     <div class="case"><div><div class="t">All cases, looping</div><div class="d">Attract mode for between visitors</div></div><div class="btns"><button class="btn primary" data-play="all" data-loop="1">Play all</button></div></div>
+   </div>`);
+  $("mBody").querySelectorAll("[data-play]").forEach(b=>b.onclick=async()=>{
+    await post(`/api/play?scenario=${encodeURIComponent(b.dataset.play)}${b.dataset.loop?"&loop=1":""}${S.noise?"&noise=1":""}`);
+    $("modal").classList.remove("show");
+  });
+  $("mBody").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{
+    const c=cs.find(x=>x.id===b.dataset.card);
+    modal(c.title, `<div class="card"><small>Case card · read this first</small>${esc(c.card)}</div>
+      <p style="color:var(--ink-2)">Your job: read the logs and answer four questions. <b>What's happening? Is anything unusual? Should they worry? What should they do next?</b></p>
+      <button class="btn primary" id="cardPlay">Play these logs</button>`);
+    $("cardPlay").onclick=async()=>{ await post(`/api/play?scenario=${encodeURIComponent(c.id)}`); $("modal").classList.remove("show"); };
+  });
+};
+$("bNoise").onclick=async()=>{ S.noise=!S.noise; $("bNoise").classList.toggle("on",S.noise); if(S.noise) await post("/api/play?noise=1"); else await post("/api/stop"); };
+$("bStop").onclick=()=>{ S.noise=false; $("bNoise").classList.remove("on"); post("/api/stop"); };
+$("bReset").onclick=()=>{ if(confirm("Delete ALL logs from the database? This can't be undone.")) post("/api/reset"); };
+function setChallenge(on){ S.challenge=on; document.body.classList.toggle("challenge",on); $("bChallenge").classList.toggle("on",on); }
+$("bChallenge").onclick=()=>setChallenge(!S.challenge);
+$("bReveal").onclick=()=>setChallenge(false);
+
+async function showDigest(mode){
+  const scope = S.device ? `device=${encodeURIComponent(S.device)}` : "";
+  modal(mode==="ai"?"AI read of the raw logs":"Digest", `<div class="note">${mode==="ai"?"Sending the <b>raw logs only</b> (no case card, no dashboard verdicts) to the AI…":"Summarising…"}</div>`);
+  const d=await post(`/api/digest?mode=${mode}&${scope}`);
+  $("mBody").innerHTML=(d.note?`<div class="note">${esc(d.note)}</div>`:"")
+    +(d.mode==="ai"?`<div class="note">This is the machine's answer. <b>Check it against the answer key:</b> what did it get right, what did it miss, and did it state anything the logs don't actually show?</div>`:"")
+    +md(d.text);
+}
+$("bDigest").onclick=()=>showDigest("rules");
+$("bAI").onclick=()=>showDigest("ai");
+
+// feed & device interactions
+$("feed").onclick=e=>{ const r=e.target.closest(".row"); if(r) r.classList.toggle("open"); };
+$("filters").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; if(b.dataset.clear) S.device=null; else S.filter=b.dataset.f; renderAll(); };
+$("devices").onclick=e=>{ const d=e.target.closest(".dev"); if(!d) return; S.device = S.device===d.dataset.dev ? null : d.dataset.dev; renderAll(); };
+
+// tooltips
+const tip=$("tip");
+function showTip(ev,html){ tip.innerHTML=html; tip.style.display="block"; const x=Math.min(ev.clientX+14, innerWidth-tip.offsetWidth-8); tip.style.left=x+"px"; tip.style.top=(ev.clientY+14)+"px"; }
+$("timeline").addEventListener("mousemove",ev=>{ const h=ev.target.closest(".hit"); if(!h||S.challenge) return tip.style.display="none";
+  const svg=$("timeline"), i=+h.dataset.i, b=svg._bins[i], t=svg._start+i*svg._span;
+  showTip(ev, `<b>${hhmm(t)}–${hhmm(t+svg._span)}</b><br>${b.map((v,l)=>`${chip(l)} ${v}`).join("<br>")}`); });
+$("timeline").addEventListener("mouseleave",()=>tip.style.display="none");
+$("cats").addEventListener("mousemove",ev=>{ const c=ev.target.closest(".cat"); if(!c||S.challenge) return tip.style.display="none";
+  const v=$("cats")._m[c.dataset.cat]; showTip(ev, `<b>${c.dataset.cat}</b><br>${v.map((n,l)=>`${chip(l)} ${n}`).join("<br>")}`); });
+$("cats").addEventListener("mouseleave",()=>tip.style.display="none");
+
+addEventListener("keydown",e=>{ if(e.key==="Escape") $("modal").classList.remove("show"); if(e.key==="c"&&!e.target.closest("input,textarea")&&!$("modal").classList.contains("show")) setChallenge(!S.challenge); });
+setInterval(()=>{ $("clock").textContent=new Date().toLocaleTimeString([], {hour12:false}); },1000);
+setInterval(()=>{ renderTimeline(); renderDevices(); }, 5000);
+addEventListener("resize",renderTimeline);
+boot();
+</script>
+</body>
+</html>

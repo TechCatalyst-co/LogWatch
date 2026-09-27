@@ -1,0 +1,23 @@
+# title: Case 1 - "My Wi-Fi feels slow"
+# source: router
+# device: Home router (Netgear R6400)
+# card: The Garcia family has 5 devices: two iPhones, a work laptop, a Samsung TV and an Xbox. Wi-Fi has been crawling at night for a week. Nobody in the house is up after midnight.
+# known: 3c:22:fb:10:aa:01 3c:22:fb:10:aa:02 f0:18:98:41:7c:e3 d8:3a:dd:44:10:9c 98:5f:d3:21:0b:6a
+# pace: 1.4
+{SYSLOGDATE} 01:48:02 router dnsmasq-dhcp[812]: DHCPACK(br-lan) 192.168.1.23 3c:22:fb:10:aa:01 Dads-iPhone
+{SYSLOGDATE} 01:48:40 router dnsmasq[812]: query[A] gateway.icloud.com from 192.168.1.23
+{SYSLOGDATE} 01:52:10 router dnsmasq-dhcp[812]: DHCPACK(br-lan) 192.168.1.31 d8:3a:dd:44:10:9c UN55TU7000-Living
+{SYSLOGDATE} 01:55:31 router kernel: [DoS Attack: SYN/ACK Scan] from source: 45.33.32.156, port 443
+{SYSLOGDATE} 02:03:41 router dnsmasq-dhcp[812]: DHCPACK(br-lan) 192.168.1.57 a4:c3:f0:8e:51:2d android-8f2c1d9e
+{SYSLOGDATE} 02:04:15 router miniupnpd[1107]: addentry: TCP 51413 -> 192.168.1.57:51413 'Transmission at 51413'
+{SYSLOGDATE} 02:04:16 router miniupnpd[1107]: addentry: UDP 51413 -> 192.168.1.57:51413 'Transmission at 51413'
+{SYSLOGDATE} 02:05:02 router uhttpd[944]: luci: failed login on / for admin from 185.220.101.47
+{SYSLOGDATE} 02:05:09 router uhttpd[944]: luci: failed login on / for admin from 185.220.101.47
+{SYSLOGDATE} 02:05:17 router uhttpd[944]: luci: failed login on / for root from 185.220.101.47
+{SYSLOGDATE} 02:05:24 router uhttpd[944]: luci: failed login on / for admin from 185.220.101.47
+{SYSLOGDATE} 02:05:31 router uhttpd[944]: luci: failed login on / for admin from 185.220.101.47
+{SYSLOGDATE} 02:05:40 router uhttpd[944]: luci: failed login on / for user from 185.220.101.47
+{SYSLOGDATE} 02:09:12 router dnsmasq[812]: query[A] tracker.opentrackr.org from 192.168.1.57
+{SYSLOGDATE} 02:11:48 router dnsmasq-dhcp[812]: DHCPACK(br-lan) 192.168.1.44 98:5f:d3:21:0b:6a Xbox-Series-X
+{SYSLOGDATE} 02:15:00 router system: Firmware update available: V1.0.4.126 (current V1.0.0.58, released 2019)
+{SYSLOGDATE} 02:31:55 router kernel: [DoS Attack: TCP Port Scan] from source: 162.142.125.10, port 22

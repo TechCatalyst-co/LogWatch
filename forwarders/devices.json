@@ -1,0 +1,5 @@
+{
+  "_comment": "Map a device's IP address to a friendly name for syslog senders.",
+  "192.168.8.1": "Booth router (OpenWRT)",
+  "192.168.8.20": "Raspberry Pi"
+}

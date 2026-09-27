@@ -1,0 +1,20 @@
+# title: Case 2 - "Is someone using my PC?"
+# source: windows
+# device: Maria's desktop (Windows 11)
+# card: Maria is a nurse and works the night shift (11 PM - 7 AM). She sleeps from about 9 AM to 5 PM. Her PC has Remote Desktop turned on because IT set it up once. Nobody else lives with her.
+# pace: 1.2
+{"TimeCreated":"{DATE}T03:02:11","EventID":6005,"Message":"The Event log service was started."}
+{"TimeCreated":"{DATE}T03:02:40","EventID":4624,"TargetUserName":"SYSTEM","LogonType":5,"IpAddress":"-","Message":"An account was successfully logged on."}
+{"TimeCreated":"{DATE}T03:03:05","EventID":4624,"TargetUserName":"maria","LogonType":2,"IpAddress":"127.0.0.1","Message":"An account was successfully logged on."}
+{"TimeCreated":"{DATE}T07:14:52","EventID":4647,"TargetUserName":"maria","Message":"User initiated logoff."}
+{"TimeCreated":"{DATE}T13:41:03","EventID":4625,"TargetUserName":"maria","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account failed to log on."}
+{"TimeCreated":"{DATE}T13:41:11","EventID":4625,"TargetUserName":"administrator","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account failed to log on."}
+{"TimeCreated":"{DATE}T13:41:19","EventID":4625,"TargetUserName":"maria","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account failed to log on."}
+{"TimeCreated":"{DATE}T13:41:28","EventID":4625,"TargetUserName":"maria","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account failed to log on."}
+{"TimeCreated":"{DATE}T13:41:36","EventID":4625,"TargetUserName":"maria","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account failed to log on."}
+{"TimeCreated":"{DATE}T13:41:44","EventID":4625,"TargetUserName":"maria","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account failed to log on."}
+{"TimeCreated":"{DATE}T13:42:02","EventID":4624,"TargetUserName":"maria","LogonType":10,"IpAddress":"185.220.101.47","Message":"An account was successfully logged on."}
+{"TimeCreated":"{DATE}T13:44:30","EventID":4698,"TargetUserName":"maria","TaskName":"\\Microsoft\\Windows\\UpdateCheck","Command":"powershell.exe -w hidden -enc SQBFAFgA... C:\\Users\\maria\\AppData\\Roaming\\upd.ps1","Message":"A scheduled task was created."}
+{"TimeCreated":"{DATE}T13:45:12","EventID":4720,"TargetUserName":"support_admin","SubjectUserName":"maria","Message":"A user account was created."}
+{"TimeCreated":"{DATE}T13:45:13","EventID":4732,"TargetUserName":"support_admin","Group":"Administrators","Message":"A member was added to a security-enabled local group."}
+{"TimeCreated":"{DATE}T13:49:58","EventID":1102,"SubjectUserName":"maria","Message":"The audit log was cleared."}

@@ -1,0 +1,34 @@
+# Render Blueprint: New + -> Blueprint -> pick this repo.
+# You'll be asked for the values marked sync: false.
+services:
+  - type: web
+    name: logwatch-api
+    runtime: python
+    rootDir: backend
+    plan: free            # use "starter" on event day: free services sleep after 15 min idle
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: MONGODB_URI          # MongoDB Atlas connection string
+        sync: false
+      - key: ADMIN_PASSWORD       # booth operator password
+        sync: false
+      - key: ALLOWED_ORIGINS      # your Netlify URL, e.g. https://logwatch-csf.netlify.app
+        sync: false
+      - key: ANTHROPIC_API_KEY    # optional, enables Ask AI
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: INGEST_KEY
+        generateValue: true
+      - key: MONGODB_DB
+        value: logwatch
+      - key: EVENT_TTL_DAYS
+        value: "14"
+      - key: PUBLIC_VIEW
+        value: "false"
+      - key: CLAUDE_MODEL
+        value: claude-sonnet-5
