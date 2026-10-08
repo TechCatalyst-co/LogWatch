@@ -6,6 +6,8 @@ A hosted version of the LogWatch booth demo for CSF 2026 · *Connected lives, Pr
 - **Backend API** (log classifier, live stream, scenario player, AI digest) → **Render**
 - **Database** → **MongoDB Atlas** (free M0 cluster is plenty)
 
+> **Running the booth?** Students operating the demo should read the [TheLogWatch Operator's Guide](docs/USER_GUIDE.md).
+
 ```
  phones (QR code) ─────────────┐
  Windows PC (PowerShell) ──────┤  HTTPS + ingest key
