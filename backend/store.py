@@ -13,6 +13,7 @@ Set MONGODB_URI=mongomock:// to run without a database (tests / quick demos).
 from datetime import datetime, timezone
 
 from pymongo import ASCENDING, DESCENDING, MongoClient
+from pymongo.errors import OperationFailure
 
 PUBLIC = {"_id": 0, "created": 0}
 
@@ -40,13 +41,19 @@ class Store:
 
     # ------------------------------------------------------------------ setup
     def init(self):
-        self.events.create_index([("rx", DESCENDING)])
-        self.events.create_index([("device", ASCENDING), ("rx", DESCENDING)])
-        self.events.create_index([("scenario", ASCENDING)])
-        if self.ttl_days > 0:
-            self.events.create_index("created", expireAfterSeconds=int(self.ttl_days * 86400))
-        self.known.create_index([("device", ASCENDING), ("mac", ASCENDING)], unique=True)
-        self.ai.create_index("created", expireAfterSeconds=7 * 86400)
+        try:
+            self.events.create_index([("rx", DESCENDING)])
+            self.events.create_index([("device", ASCENDING), ("rx", DESCENDING)])
+            self.events.create_index([("scenario", ASCENDING)])
+            if self.ttl_days > 0:
+                self.events.create_index("created", expireAfterSeconds=int(self.ttl_days * 86400))
+            self.known.create_index([("device", ASCENDING), ("mac", ASCENDING)], unique=True)
+            self.ai.create_index("created", expireAfterSeconds=7 * 86400)
+        except OperationFailure as e:
+            # Atlas users without createIndex (e.g. a read-only role) can still run the app,
+            # just without the indexes and the automatic TTL cleanup.
+            print(f"WARNING: could not create MongoDB indexes ({e.details.get('errmsg', e)}). "
+                  "Give the database user the readWrite role on this database.")
 
     def ping(self):
         if self.memory:
