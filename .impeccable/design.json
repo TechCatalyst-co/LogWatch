@@ -1,0 +1,445 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-08T04:44:44+00:00",
+  "title": "Design System: TheLogWatch",
+  "extensions": {
+    "colorMeta": {
+      "porcelain": {
+        "role": "primary",
+        "displayName": "Porcelain",
+        "canonical": "oklch(95.9% 0.010 87)",
+        "tonalRamp": [
+          "#0C0B08",
+          "#26241F",
+          "#423F3A",
+          "#605D57",
+          "#807D77",
+          "#A19E98",
+          "#C7C4BD",
+          "#F0EEEA"
+        ]
+      },
+      "porcelain-dim": {
+        "role": "primary",
+        "displayName": "Porcelain Dim",
+        "canonical": "oklch(85.4% 0.031 276)",
+        "tonalRamp": [
+          "#0A0B10",
+          "#21232E",
+          "#3C3F4C",
+          "#595D6C",
+          "#797C8D",
+          "#999DB0",
+          "#BEC3D8",
+          "#EBEEFB"
+        ]
+      },
+      "porcelain-faint": {
+        "role": "primary",
+        "displayName": "Porcelain Faint",
+        "canonical": "oklch(68.5% 0.054 274)",
+        "tonalRamp": [
+          "#080A14",
+          "#1E2238",
+          "#383E57",
+          "#555C79",
+          "#737B9C",
+          "#949DC0",
+          "#BAC2E5",
+          "#E8EEFF"
+        ]
+      },
+      "line-green": {
+        "role": "secondary",
+        "displayName": "Line Green (Normal)",
+        "canonical": "oklch(66.7% 0.183 148)",
+        "tonalRamp": [
+          "#001200",
+          "#003300",
+          "#005300",
+          "#00741C",
+          "#009738",
+          "#37BB58",
+          "#6FE184",
+          "#C6FFCC"
+        ]
+      },
+      "line-cobalt": {
+        "role": "secondary",
+        "displayName": "Line Cobalt (FYI)",
+        "canonical": "oklch(58.1% 0.229 264)",
+        "tonalRamp": [
+          "#000135",
+          "#00007B",
+          "#022AA7",
+          "#184CD4",
+          "#326EFF",
+          "#5795FF",
+          "#81BEFF",
+          "#CAEEFF"
+        ]
+      },
+      "line-amber": {
+        "role": "secondary",
+        "displayName": "Line Amber (Worth a look)",
+        "canonical": "oklch(84.6% 0.172 85)",
+        "tonalRamp": [
+          "#160700",
+          "#3B1B00",
+          "#5C3700",
+          "#7F5500",
+          "#A47400",
+          "#CA9500",
+          "#F5BA00",
+          "#FFEAA3"
+        ]
+      },
+      "line-scarlet": {
+        "role": "secondary",
+        "displayName": "Line Scarlet (Act now)",
+        "canonical": "oklch(58.4% 0.224 25)",
+        "tonalRamp": [
+          "#280000",
+          "#610000",
+          "#8B0000",
+          "#B70010",
+          "#E4222F",
+          "#FF5A58",
+          "#FF8A83",
+          "#FFD3CB"
+        ]
+      },
+      "line-green-tint": {
+        "role": "secondary",
+        "displayName": "Green Tint (text on midnight)"
+      },
+      "line-cobalt-tint": {
+        "role": "secondary",
+        "displayName": "Cobalt Tint (text on midnight)"
+      },
+      "line-amber-tint": {
+        "role": "secondary",
+        "displayName": "Amber Tint (text on midnight)"
+      },
+      "line-scarlet-tint": {
+        "role": "secondary",
+        "displayName": "Scarlet Tint (text on midnight)"
+      },
+      "on-line-green": {
+        "role": "secondary",
+        "displayName": "Deep Green Ink (text on green pill)"
+      },
+      "on-line-amber": {
+        "role": "secondary",
+        "displayName": "Deep Amber Ink (text on amber pill)"
+      },
+      "midnight": {
+        "role": "neutral",
+        "displayName": "Midnight Enamel",
+        "canonical": "oklch(19.6% 0.060 270)",
+        "tonalRamp": [
+          "#060A1A",
+          "#192240",
+          "#353E5D",
+          "#525C7A",
+          "#727C99",
+          "#949EB9",
+          "#BAC4DD",
+          "#E9EEFC"
+        ]
+      },
+      "midnight-panel": {
+        "role": "neutral",
+        "displayName": "Midnight Panel",
+        "canonical": "oklch(23.1% 0.075 269)",
+        "tonalRamp": [
+          "#05091D",
+          "#162047",
+          "#313E64",
+          "#4F5C82",
+          "#6F7CA1",
+          "#909EC1",
+          "#B7C4E5",
+          "#E7EEFF"
+        ]
+      },
+      "midnight-raised": {
+        "role": "neutral",
+        "displayName": "Midnight Raised",
+        "canonical": "oklch(26.7% 0.086 269)",
+        "tonalRamp": [
+          "#04091F",
+          "#131F4D",
+          "#2E3D6A",
+          "#4C5C88",
+          "#6C7CA7",
+          "#8E9DC7",
+          "#B5C3EA",
+          "#E6EEFF"
+        ]
+      },
+      "midnight-sunk": {
+        "role": "neutral",
+        "displayName": "Midnight Sunk",
+        "canonical": "oklch(16.4% 0.047 270)",
+        "tonalRamp": [
+          "#070A17",
+          "#1C2339",
+          "#373F56",
+          "#555D74",
+          "#757D93",
+          "#979EB3",
+          "#BDC4D7",
+          "#EAEEF9"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline (porcelain 14%)"
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong (porcelain 26%)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Line-status numerals only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Phone page heading; modal heads at 20px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Log row, device and alert titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Plain-English explanations and advice; tabular figures."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Panel and card heads, uppercase tracked signage."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "All dashboard buttons, uppercase."
+      },
+      "pill": {
+        "displayName": "Pill",
+        "purpose": "Verdict line pills, uppercase."
+      },
+      "station": {
+        "displayName": "Station",
+        "purpose": "Device names on the line diagram, uppercase."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Raw log text and commands only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float-tooltip",
+        "value": "0 10px 30px rgba(0,0,0,.45)",
+        "purpose": "Chart tooltip floating over the diagram."
+      },
+      {
+        "name": "float-sheet",
+        "value": "0 24px 70px rgba(0,0,0,.5)",
+        "purpose": "Modal sheets over a rgba(4,7,22,.78) scrim."
+      },
+      {
+        "name": "toggle-underline",
+        "value": "inset 0 -3px 0 #F4F1EA",
+        "purpose": "Active toggle button, transit-nav active bar."
+      },
+      {
+        "name": "selected-outline",
+        "value": "inset 0 0 0 1.5px #F4F1EA",
+        "purpose": "Selected device row."
+      },
+      {
+        "name": "interchange-ring",
+        "value": "inset 0 0 0 3px #E21D2D",
+        "purpose": "Act-now stop: porcelain disc with scarlet ring."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px rgba(244,241,234,.14)",
+        "purpose": "Focused text field, with porcelain border."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-arrive",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "New-row ink rule draw (1.4s, scaleX from left, then fade)."
+      },
+      {
+        "name": "duration-state",
+        "value": "0.2s",
+        "purpose": "Colour, border and background transitions on hover/state."
+      },
+      {
+        "name": "live-pulse",
+        "value": "2s infinite",
+        "purpose": "Live dot ring while the SSE stream is connected; static scarlet when off."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Removes all animation and transitions."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide-tight",
+        "value": "1380px"
+      },
+      {
+        "name": "stack",
+        "value": "980px"
+      },
+      {
+        "name": "phone",
+        "value": "600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Porcelain signage plate for the one main action in a group (Cases, Sign in, Connect).",
+      "html": "<div class=\"ds-wrap\"><button class=\"ds-btn ds-btn-primary\">Cases</button></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-wrap{background:var(--bg);padding:16px} .ds-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid var(--line-2);padding:8px 12px 7px;border-radius:7px;cursor:pointer;font:700 12.5px var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--ink);transition:border-color .2s,background-color .2s} .ds-btn:hover{border-color:var(--ink);background:rgba(244,241,234,.06)} .ds-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px} .ds-btn-primary{background:var(--ink);border-color:var(--ink);color:var(--bg)} .ds-btn-primary:hover{background:#fff;border-color:#fff}"
+    },
+    {
+      "name": "Outline Button and Toggle",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Default header control; the toggle-on state adds a porcelain inset underline; danger hovers scarlet.",
+      "html": "<div class=\"ds-wrap\"><button class=\"ds-btn\">Digest</button> <button class=\"ds-btn ds-on\" aria-pressed=\"true\">Challenge mode</button> <button class=\"ds-btn ds-danger\">Reset</button></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-wrap{background:var(--bg);padding:16px;display:flex;gap:6px} .ds-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid var(--line-2);padding:8px 12px 7px;border-radius:7px;cursor:pointer;font:700 12.5px var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--ink);transition:border-color .2s,background-color .2s} .ds-btn:hover{border-color:var(--ink);background:rgba(244,241,234,.06)} .ds-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px} .ds-on{border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--ink)} .ds-danger:hover{border-color:var(--l3);color:var(--l3-t)}"
+    },
+    {
+      "name": "Line Pills",
+      "kind": "chip",
+      "refersTo": "pill-act-now",
+      "description": "Verdict badges: line-ink fill, drawn glyph, word in tracked caps. Never colour alone.",
+      "html": "<div class=\"ds-wrap\"><span class=\"ds-pill ds-p0\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg>Normal</span><span class=\"ds-pill ds-p1\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 11v7M12 6.5v.01\"/></svg>FYI</span><span class=\"ds-pill ds-p2\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 7v6.5M12 17.5v.01\"/></svg>Worth a look</span><span class=\"ds-pill ds-p3\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8.5 6.5v7M8.5 17.5v.01M15.5 6.5v7M15.5 17.5v.01\"/></svg>Act now</span></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-wrap{background:var(--panel);padding:16px;display:flex;gap:8px;flex-wrap:wrap} .ds-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 2px 6px;border-radius:5px;font:800 11.5px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.07em} .ds-pill .ds-i{font-size:13px} .ds-p0{background:var(--l0);color:#05200E} .ds-p1{background:var(--l1);color:#fff} .ds-p2{background:var(--l2);color:#2A1E00} .ds-p3{background:var(--l3);color:#fff}"
+    },
+    {
+      "name": "Filter Chips",
+      "kind": "chip",
+      "refersTo": "filter-chip",
+      "description": "Round outlined filters; the active one is solid porcelain.",
+      "html": "<div class=\"ds-wrap\"><button class=\"ds-f ds-f-on\">All</button><button class=\"ds-f\">Router</button><button class=\"ds-f\">Phone</button></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-wrap{background:var(--panel);padding:16px;display:flex;gap:6px} .ds-f{padding:4px 11px 3px;border-radius:999px;border:1.5px solid var(--line-2);background:transparent;cursor:pointer;font:600 12.5px var(--sans);color:var(--ink-2)} .ds-f:hover{border-color:var(--ink);color:var(--ink)} .ds-f:focus-visible{outline:2px solid var(--ink);outline-offset:2px} .ds-f-on,.ds-f-on:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}"
+    },
+    {
+      "name": "Password Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Sunk well with porcelain focus halo and an inline show/hide eye toggle.",
+      "html": "<div class=\"ds-wrap\"><label class=\"ds-lab\" for=\"ds-pw\">Password</label><div class=\"ds-pw\"><input id=\"ds-pw\" type=\"password\" value=\"booth2026\"><button type=\"button\" class=\"ds-eye\" aria-label=\"Show password\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\"><path d=\"M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg></button></div></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-wrap{background:var(--panel);padding:20px;max-width:380px} .ds-lab{display:block;color:var(--ink-2);font:600 13px var(--sans);margin-bottom:7px} .ds-pw{position:relative;display:flex} .ds-pw input{width:100%;box-sizing:border-box;padding:12px 52px 11px 14px;border-radius:8px;border:1.5px solid var(--line-2);background:var(--sunk);color:var(--ink);font:16px var(--sans);caret-color:var(--ink);transition:border-color .2s} .ds-pw input:hover{border-color:rgba(244,241,234,.45)} .ds-pw input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(244,241,234,.14)} .ds-eye{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:40px;height:36px;border:0;border-radius:6px;background:transparent;color:var(--ink-2);cursor:pointer;display:grid;place-items:center;font-size:20px} .ds-eye .ds-i{stroke-width:2} .ds-eye:hover{color:var(--ink);background:rgba(244,241,234,.08)}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Midnight panel with tracked-caps head and hairline rules between rows.",
+      "html": "<div class=\"ds-wrap\"><div class=\"ds-panel\"><div class=\"ds-phead\"><h2>What to do next</h2><span>3 issues</span></div><div class=\"ds-row\">Program downloaded from a fake site</div><div class=\"ds-row\">Spotify used your camera overnight</div></div></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-wrap{background:var(--bg);padding:16px} .ds-panel{background:var(--panel);border:1.5px solid var(--line-2);border-radius:12px;overflow:hidden;font:15px/1.45 var(--sans);color:var(--ink)} .ds-phead{display:flex;align-items:center;padding:13px 16px 11px;border-bottom:1px solid var(--line)} .ds-phead h2{margin:0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.11em} .ds-phead span{margin-left:auto;color:var(--ink-3);font-size:12.5px} .ds-row{padding:13px 16px;border-bottom:1px solid var(--line);font-weight:700;transition:background-color .2s} .ds-row:hover{background:var(--panel-2)}"
+    },
+    {
+      "name": "Line-Status Tile",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "Huge numeral under a caps label with a stop, a 4px verdict-ink band hanging from the top edge.",
+      "html": "<div class=\"ds-wrap\"><div class=\"ds-kpi\"><div class=\"ds-klab\"><span class=\"ds-stop\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8.5 6.5v7M8.5 17.5v.01M15.5 6.5v7M15.5 17.5v.01\"/></svg></span>Act now</div><div class=\"ds-val\">25</div><div class=\"ds-sub\">do something about these today</div></div></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-wrap{background:var(--bg);padding:16px} .ds-kpi{position:relative;max-width:280px;padding:16px 20px 14px;background:linear-gradient(180deg,rgba(226,29,45,.22),rgba(226,29,45,.04)),var(--panel);border:1.5px solid var(--line-2);border-radius:12px;font-family:var(--sans);font-variant-numeric:tabular-nums} .ds-kpi:before{content:'';position:absolute;left:20px;right:20px;top:0;height:4px;border-radius:0 0 3px 3px;background:var(--l3)} .ds-klab{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em} .ds-stop{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;background:var(--ink);color:var(--l3);box-shadow:inset 0 0 0 3px var(--l3)} .ds-val{font-size:52px;font-weight:800;line-height:1;letter-spacing:-.02em;margin-top:10px;color:var(--l3-t)} .ds-sub{color:var(--ink-3);font-size:13px;margin-top:4px}"
+    },
+    {
+      "name": "Device Line Strip",
+      "kind": "custom",
+      "refersTo": "stop",
+      "description": "Roster rows threaded on a vertical 4px line in each device's worst-verdict ink; Act now is an interchange ring.",
+      "html": "<div class=\"ds-wrap\"><div class=\"ds-dev\" style=\"--c:var(--l3)\"><div class=\"ds-rail\"><span class=\"ds-stop ds-s3\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8.5 6.5v7M8.5 17.5v.01M15.5 6.5v7M15.5 17.5v.01\"/></svg></span></div><div><b>Sam's laptop (Chrome)</b><small>Browser · 11 logs</small></div></div><div class=\"ds-dev\" style=\"--c:var(--l2)\"><div class=\"ds-rail\"><span class=\"ds-stop ds-s2\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 7v6.5M12 17.5v.01\"/></svg></span></div><div><b>Demo phone</b><small>Phone · 7 logs</small></div></div><div class=\"ds-dev\" style=\"--c:var(--l0)\"><div class=\"ds-rail\"><span class=\"ds-stop ds-s0\"><svg class=\"ds-i\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></span></div><div><b>Booth laptop</b><small>Windows · 5 logs</small></div></div></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none} .ds-wrap{background:var(--panel);max-width:300px;font:15px/1.25 var(--sans);color:var(--ink)} .ds-dev{display:flex;gap:12px;align-items:center;min-height:62px;padding:0 16px 0 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background-color .2s} .ds-dev:hover{background:var(--panel-2)} .ds-dev small{display:block;color:var(--ink-3);font-size:12.5px;margin-top:2px} .ds-rail{align-self:stretch;width:22px;position:relative;display:grid;place-items:center} .ds-rail:before{content:'';position:absolute;top:0;bottom:-1px;left:9px;width:4px;background:var(--c)} .ds-dev:first-child .ds-rail:before{top:50%} .ds-dev:last-child .ds-rail:before{bottom:50%} .ds-stop{position:relative;width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;color:var(--bg);background:var(--c)} .ds-s3{background:var(--ink);color:var(--l3);box-shadow:inset 0 0 0 3px var(--l3)}"
+    },
+    {
+      "name": "Fare Card",
+      "kind": "card",
+      "refersTo": "fare-card",
+      "description": "Porcelain case card with the full four-ink band across the top in verdict order.",
+      "html": "<div class=\"ds-wrap\"><div class=\"ds-card\">Jamie says the home Wi-Fi gets slow every evening. Read the router log and decide: Normal, FYI, Worth a look or Act now?</div></div>",
+      "css": ":host{--bg:#0B1230;--panel:#0F1940;--panel-2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.14);--line-2:rgba(244,241,234,.26);--ink:#F4F1EA;--ink-2:#C9CEE4;--ink-3:#8F98BC;--l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;--l3-t:#FF7A82;--sans:'Overpass','Helvetica Neue',Arial,system-ui,sans-serif;--mono:'Overpass Mono',ui-monospace,Consolas,monospace} .ds-wrap{background:var(--panel);padding:20px} .ds-card{position:relative;overflow:hidden;background:var(--ink);color:var(--bg);border-radius:10px;padding:26px 22px 20px;font:18px/1.55 var(--sans);max-width:520px} .ds-card:before{content:'';position:absolute;left:0;right:0;top:0;height:8px;background:linear-gradient(90deg,var(--l0) 0 25%,var(--l1) 25% 50%,var(--l2) 50% 75%,var(--l3) 75%)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Midnight Transit Diagram",
+    "overview": "TheLogWatch is drawn as a night-time metro map. Each device is a line, each log is a stop on it, and each verdict is a line colour. The ground is midnight-blue enamel with porcelain-white type and hairline-ruled panels, the way a station sign or line diagram is lettered. The world rejects the graphite SOC dashboard with a single blue accent: here colour is never decoration and never brand chrome. The four line inks *are* the four verdicts (Normal, FYI, Worth a look, Act now), and everything that is not a verdict is porcelain.\n\nThe enamel finish is adapted on purpose: it renders as a flat midnight field, not as gloss, grain or sheen, so text and line inks keep their contrast on a bright booth TV read from metres away. Density is a working big-screen diagram (dashboard fills exactly one viewport, panels scroll internally), and the visitor phone page is the same world at a single narrow column.\n\nThe signature moves are transit-native: vertical line strips threading a device roster, a horizontal line diagram with stops coloured by worst verdict, Act-now stops drawn as interchange rings, line pills with drawn glyphs, and the four-ink band that appears only as the complete network.",
+    "keyCharacteristics": [
+      "Flat midnight enamel field; depth by tonal steps and porcelain hairlines, not shadows.",
+      "Four line inks reserved for verdicts; porcelain carries every chrome state.",
+      "Overpass (Highway Gothic lineage) in tracked caps for labels, signs and station names; Overpass Mono only for raw log text.",
+      "Every verdict carries ink + drawn glyph + word; never colour alone.",
+      "Big, readable-across-the-room numerals and titles; tabular figures throughout."
+    ],
+    "rules": [
+      {
+        "name": "The Line Ink Rule",
+        "body": "Green, cobalt, amber and scarlet are verdicts and nothing else. Active toggles, banners, selection, caret, focus and badges are porcelain. If a coloured thing isn't telling you a verdict, it's wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Full Network Rule",
+        "body": "The four inks appear together only as the complete set in verdict order (green, cobalt, amber, scarlet): the logo mark, the fare-card top band, the phone lockup strip, the diagram legend. Never a subset as decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tint-For-Text Rule",
+        "body": "When a line ink colours text on midnight, use its tint, not the raw ink. Raw inks are for fills, rails, rules and stops.",
+        "section": "colors"
+      },
+      {
+        "name": "The Signage Caps Rule",
+        "body": "Uppercase with tracking is for signs (labels, buttons, pills, station names). Sentences, advice and titles stay sentence case.",
+        "section": "typography"
+      },
+      {
+        "name": "The Mono-Is-Evidence Rule",
+        "body": "Overpass Mono is used only for raw log text and commands. Never for UI labels, numbers or chrome.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Enamel Rule",
+        "body": "The field stays flat midnight: no gloss, grain, glass or sheen. Depth is tone and hairline; shadow is reserved for things that float.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep every verdict as ink + drawn glyph + word (line pill or stop with screen-reader word).",
+      "**Do** put every chrome state (active toggle, banner, selection, caret, focus, badge) in porcelain (#F4F1EA).",
+      "**Do** use the line tints (#5FD884, #8DABFF, #FFD45C, #FF7A82) when a verdict colours text on midnight.",
+      "**Do** draw Act now as an interchange ring: porcelain disc, scarlet ring.",
+      "**Do** set labels, buttons, pills and station names in Overpass tracked caps; keep sentences in sentence case.",
+      "**Do** build depth from the midnight tonal steps and 1.5px porcelain hairlines."
+    ],
+    "donts": [
+      "**Don't** use green, cobalt, amber or scarlet for anything that is not a verdict: not links, focus, active states or brand accents.",
+      "**Don't** turn the world into a graphite SOC dashboard with one blue accent.",
+      "**Don't** render the enamel as gloss, grain, glass or sheen; the field stays flat midnight for booth-TV contrast.",
+      "**Don't** show a verdict by colour alone.",
+      "**Don't** use Overpass Mono outside raw log text and commands.",
+      "**Don't** show a subset of the four inks as decoration; together they appear only as the full set in verdict order."
+    ]
+  }
+}

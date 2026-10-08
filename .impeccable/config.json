@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-10-08T04:39:11.801Z",
+        "reason": "finish reviewer: .card:before is a top four-ink fare-card band from the transit world, not a side tab; .btn.on is a transit-nav active underline"
+      },
+      {
+        "rule": "pulsing-dot",
+        "value": "*",
+        "files": [
+          "frontend/index.html"
+        ],
+        "createdAt": "2026-10-08T04:39:11.824Z",
+        "reason": "finish reviewer: .dot mirrors the real SSE connection state, goes static red on disconnect, honors reduced motion"
+      }
+    ]
+  }
+}

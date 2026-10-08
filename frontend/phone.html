@@ -4,41 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<title>LogWatch · Send from your phone</title>
+<title>TheLogWatch · Send from your phone</title>
+<meta name="theme-color" content="#0B1230">
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=Overpass+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0e1116;--panel:#161a21;--p2:#1c212a;--line:#2b323d;--ink:#f3f4f6;--ink2:#b8bec9;--ink3:#7d8594;--acc:#1f6fd1;color-scheme:dark}
+:root{--bg:#0B1230;--panel:#0F1940;--p2:#15214F;--sunk:#070C22;--line:rgba(244,241,234,.26);--ink:#F4F1EA;--ink2:#C9CEE4;--ink3:#8F98BC;
+  --l0:#22B14C;--l1:#2F6BFF;--l2:#FFC20E;--l3:#E21D2D;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+::selection{background:var(--ink);color:var(--bg)}
+.sep{font-style:normal;margin:0 .45em}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Overpass","Helvetica Neue",Arial,system-ui,sans-serif;padding:16px}
 .wrap{max-width:520px;margin:0 auto}
-h1{font-size:22px;margin:4px 0 2px}
-p.sub{color:var(--ink3);margin:0 0 16px;font-size:14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-.card h2{font-size:15px;margin:0 0 4px}
-.card p{color:var(--ink2);font-size:14px;margin:0 0 12px}
-label{display:block;font-size:13px;color:var(--ink3);margin:10px 0 4px}
-input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--ink);font:inherit}
-textarea{min-height:110px;font:13px ui-monospace,Consolas,monospace}
+.lockup{display:flex;align-items:center;gap:12px;padding:6px 0 18px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.lockup img{width:40px;height:40px}
+.lockup .wm{font-size:22px;font-weight:800;line-height:1;letter-spacing:-.01em}.lockup .wm span{font-weight:400}
+.lockup small{display:block;margin-top:4px}
+.lines{margin-left:auto;display:flex;gap:4px}.lines i{width:14px;height:4px;border-radius:2px;background:var(--c)}
+h1{font-size:26px;line-height:1.15;margin:0 0 6px;font-weight:800}
+p.sub{color:var(--ink2);margin:0 0 18px;font-size:15px}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:18px 16px;margin-bottom:14px}
+.card h2{display:flex;align-items:center;gap:10px;font-size:13px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+.card h2 .n{width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:13px;letter-spacing:0}
+.card p{color:var(--ink2);font-size:15px;margin:0 0 12px}
+label,.lab{display:block;font-size:13px;font-weight:600;color:var(--ink2);margin:14px 0 6px}
+input,select,textarea{width:100%;padding:12px 13px 11px;border-radius:9px;border:1.5px solid var(--line);background:var(--sunk);color:var(--ink);font:inherit;caret-color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
+::placeholder{color:var(--ink3)}
+textarea{min-height:120px;font:13px/1.5 "Overpass Mono",ui-monospace,Consolas,monospace}
 .perms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.perms button,.when button{padding:11px 6px;border-radius:10px;border:1px solid var(--line);background:var(--p2);color:var(--ink);font:inherit;font-size:14px}
-.perms button.on,.when button.on{background:var(--acc);border-color:var(--acc)}
+.perms button,.when button{padding:11px 6px 10px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.perms button.on,.when button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .when{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.go{width:100%;margin-top:14px;padding:14px;border-radius:12px;border:0;background:var(--acc);color:#fff;font:600 16px system-ui}
-.res{margin-top:12px;padding:12px;border-radius:10px;background:var(--p2);display:none;font-size:14px}
+.go{width:100%;margin-top:16px;padding:14px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);font:800 14px "Overpass",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.09em;cursor:pointer}
+.go:disabled{opacity:.45;cursor:not-allowed}
+.res{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--p2);display:none;font-size:15px}
 .res b{display:block;margin-bottom:2px}
-.l0{border-left:4px solid #0ca30c}.l1{border-left:4px solid #3987e5}.l2{border-left:4px solid #fab219}.l3{border-left:4px solid #d03b3b}
-details{color:var(--ink2);font-size:14px}
-details summary{cursor:pointer;color:var(--ink)}
-small{color:var(--ink3)}
+.res .pill{display:inline-block;padding:2px 8px 1px;border-radius:5px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.p0{background:var(--l0);color:#05200E}.p1{background:var(--l1);color:#fff}.p2{background:var(--l2);color:#2A1E00}.p3{background:var(--l3);color:#fff}
+details{color:var(--ink2);font-size:15px;margin-bottom:4px}
+details summary{cursor:pointer;color:var(--ink);font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+details summary::-webkit-details-marker{display:none}
+details summary svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+details[open] summary svg{transform:rotate(90deg)}
+small{color:var(--ink3);font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="lockup"><img src="assets/logo-mark.svg" alt=""><div><div class="wm"><span>The</span>LogWatch</div><small>You vs. the Machine</small></div>
+    <div class="lines" aria-hidden="true"><i style="--c:var(--l0)"></i><i style="--c:var(--l1)"></i><i style="--c:var(--l2)"></i><i style="--c:var(--l3)"></i></div></div>
   <h1>Send a log to the big screen</h1>
   <p class="sub">Nothing is read from your phone automatically. You choose exactly what to send, and it only goes to the booth dashboard.</p>
 
   <div class="card">
-    <h2>1 · Check your phone's privacy log</h2>
-    <details><summary>Where do I find it?</summary>
+    <h2><span class="n">1</span>Check your phone's privacy log</h2>
+    <details><summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>Where do I find it?</summary>
       <p style="margin-top:8px"><b>Android 12+:</b> Settings → Security &amp; privacy → Privacy → <b>Privacy dashboard</b>. Tap Location, Camera or Microphone to see which apps used it and when.<br>
       <b>iPhone:</b> Settings → Privacy &amp; Security → <b>App Privacy Report</b> (turn it on, it fills in over a few days). The orange/green dot at the top of the screen means mic/camera is in use right now.</p>
     </details>
@@ -47,26 +71,28 @@ small{color:var(--ink3)}
     <label for="app">Which app?</label>
     <input id="app" list="apps" placeholder="Type or pick an app" maxlength="40" autocomplete="off">
     <datalist id="apps"><option>Google Maps</option><option>Weather</option><option>Instagram</option><option>TikTok</option><option>Snapchat</option><option>WhatsApp</option><option>Spotify</option><option>Facebook</option><option>Flashlight</option><option>Calculator</option><option>QR Scanner</option><option>Uber</option><option>DoorDash</option><option>Zoom</option></datalist>
-    <label>Used which permission?</label>
-    <div class="perms" id="perms">
-      <button data-p="LOCATION" class="on">Location</button><button data-p="MICROPHONE">Microphone</button><button data-p="CAMERA">Camera</button>
-      <button data-p="CONTACTS">Contacts</button><button data-p="SMS">Messages</button><button data-p="CALL_LOG">Call log</button>
+    <div class="lab" id="permLab">Used which permission?</div>
+    <div class="perms" id="perms" role="group" aria-labelledby="permLab">
+      <button type="button" data-p="LOCATION" class="on" aria-pressed="true">Location</button><button type="button" data-p="MICROPHONE" aria-pressed="false">Microphone</button><button type="button" data-p="CAMERA" aria-pressed="false">Camera</button>
+      <button type="button" data-p="CONTACTS" aria-pressed="false">Contacts</button><button type="button" data-p="SMS" aria-pressed="false">Messages</button><button type="button" data-p="CALL_LOG" aria-pressed="false">Call log</button>
     </div>
-    <label>When?</label>
-    <div class="when" id="when"><button data-w="now" class="on">Recently</button><button data-w="night">Overnight (2 AM)</button></div>
+    <div class="lab" id="whenLab">When?</div>
+    <div class="when" id="when" role="group" aria-labelledby="whenLab"><button type="button" data-w="now" class="on" aria-pressed="true">Recently</button><button type="button" data-w="night" aria-pressed="false">Overnight (2 AM)</button></div>
     <button class="go" id="send">Send to the dashboard</button>
     <div class="res" id="res"></div>
   </div>
 
   <div class="card">
-    <h2>2 · Paste any log (advanced)</h2>
+    <h2><span class="n">2</span>Paste any log (advanced)</h2>
     <p>Copied lines from a router admin page, Windows Event Viewer or a Raspberry Pi? Paste them here, one per line.</p>
-    <select id="src"><option value="">Let LogWatch guess the type</option><option value="router">Router</option><option value="windows">Windows</option><option value="phone">Phone</option><option value="browser">Browser history</option><option value="linux">Linux / Raspberry Pi</option></select>
+    <label for="src">Log type</label>
+    <select id="src"><option value="">Let TheLogWatch guess the type</option><option value="router">Router</option><option value="windows">Windows</option><option value="phone">Phone</option><option value="browser">Browser history</option><option value="linux">Linux / Raspberry Pi</option></select>
+    <label for="paste">Log lines</label>
     <textarea id="paste" placeholder="Sep 27 02:05:02 router uhttpd: luci: failed login for admin from 185.220.101.47"></textarea>
     <button class="go" id="sendPaste">Send lines</button>
     <div class="res" id="res2"></div>
   </div>
-  <small>Part of "You vs. the Machine" · Connected lives, Protected futures</small>
+  <small>TheLogWatch<i class=sep aria-hidden=true>·</i>You vs. the Machine<i class=sep aria-hidden=true>·</i>Connected lives, Protected futures</small>
 </div>
 <script src="config.js"></script>
 <script>
@@ -76,8 +102,8 @@ const API=(window.LOGWATCH_API||"").replace(/\/$/,"");
 const KEY=new URLSearchParams(location.search).get("k")||"";
 if(!KEY) document.addEventListener("DOMContentLoaded",()=>{ $("send").disabled=$("sendPaste").disabled=true; $("res").style.display="block"; $("res").textContent="This link is missing its booth key. Scan the QR code at the booth to get the right link."; });
 let perm="LOCATION", when="now";
-$("perms").onclick=e=>{const b=e.target.closest("button"); if(!b) return; perm=b.dataset.p; [...$("perms").children].forEach(x=>x.classList.toggle("on",x===b));};
-$("when").onclick=e=>{const b=e.target.closest("button"); if(!b) return; when=b.dataset.w; [...$("when").children].forEach(x=>x.classList.toggle("on",x===b));};
+$("perms").onclick=e=>{const b=e.target.closest("button"); if(!b) return; perm=b.dataset.p; [...$("perms").children].forEach(x=>{x.classList.toggle("on",x===b); x.setAttribute("aria-pressed",x===b);});};
+$("when").onclick=e=>{const b=e.target.closest("button"); if(!b) return; when=b.dataset.w; [...$("when").children].forEach(x=>{x.classList.toggle("on",x===b); x.setAttribute("aria-pressed",x===b);});};
 const clean=s=>s.replace(/[=\n\r]/g," ").trim();
 async function send(body, q, out){
   out.style.display="block"; out.className="res"; out.textContent="Sending…";
@@ -86,8 +112,8 @@ async function send(body, q, out){
     const d=await r.json(); if(!r.ok) throw new Error(d.error||r.status);
     const v=d.verdicts||[]; const lv=["Normal","FYI","Worth a look","Act now"];
     const top=v.reduce((a,b)=>lv.indexOf(b.level)>lv.indexOf(a.level)?b:a, v[0]||{level:"Normal",title:"Received"});
-    out.className="res l"+lv.indexOf(top.level);
-    out.innerHTML=`<b>${esc(top.level)}: ${esc(top.title)}</b>Look up at the big screen. ${v.length>1?esc(v.length)+" lines received.":""}`;
+    out.className="res";
+    out.innerHTML=`<span class="pill p${Math.max(0,lv.indexOf(top.level))}">${esc(top.level)}</span><b>${esc(top.title)}</b>Look up at the big screen. ${v.length>1?esc(v.length)+" lines received.":""}`;
   }catch(err){ out.textContent="Couldn't send ("+err.message+"). Check your connection and try again."; }
 }
 $("send").onclick=()=>{

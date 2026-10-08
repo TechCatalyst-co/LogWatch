@@ -1,5 +1,5 @@
 """
-store.py - MongoDB persistence for LogWatch.
+store.py - MongoDB persistence for TheLogWatch.
 
 Collections
   events         every classified log line (auto-deleted after EVENT_TTL_DAYS)

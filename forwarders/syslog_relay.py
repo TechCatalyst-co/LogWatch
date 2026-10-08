@@ -4,7 +4,7 @@ syslog_relay.py - run this on the booth laptop.
 
 Cloud hosts like Render only accept HTTPS, so routers and Raspberry Pis can't send
 syslog to them directly. This relay listens for syslog on your local network and
-forwards it securely to the LogWatch server.
+forwards it securely to the TheLogWatch server.
 
   python3 syslog_relay.py --server https://logwatch-api.onrender.com --key YOUR_INGEST_KEY
 
@@ -68,7 +68,7 @@ def sender(server, key, q):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--server", required=True, help="LogWatch API, e.g. https://logwatch-api.onrender.com")
+    ap.add_argument("--server", required=True, help="TheLogWatch API, e.g. https://logwatch-api.onrender.com")
     ap.add_argument("--key", required=True, help="the server's INGEST_KEY")
     ap.add_argument("--port", type=int, default=5514)
     a = ap.parse_args()

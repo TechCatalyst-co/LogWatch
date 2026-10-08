@@ -1,4 +1,4 @@
-# Connecting real devices to LogWatch (cloud version)
+# Connecting real devices to TheLogWatch (cloud version)
 
 You need two values from Render → your service → **Environment**:
 - `SERVER` = your Render URL, e.g. `https://logwatch-api.onrender.com`

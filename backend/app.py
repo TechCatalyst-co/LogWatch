@@ -1,5 +1,5 @@
 """
-LogWatch cloud backend - FastAPI + MongoDB. Deploy on Render (see render.yaml).
+TheLogWatch cloud backend - FastAPI + MongoDB. Deploy on Render (see render.yaml).
 
 Environment
   MONGODB_URI        MongoDB Atlas connection string (mongodb+srv://...). "mongomock://" = in-memory test mode
@@ -72,7 +72,7 @@ async def lifespan(_app):
     await player.stop()
 
 
-app = FastAPI(title="LogWatch", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
+app = FastAPI(title="TheLogWatch", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=ORIGINS, allow_credentials=False,
                    allow_methods=["GET", "POST", "OPTIONS"],
                    allow_headers=["Authorization", "Content-Type", "X-Ingest-Key"])

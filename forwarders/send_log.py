@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-send_log.py - push logs from any machine into LogWatch over HTTP.
+send_log.py - push logs from any machine into TheLogWatch over HTTP.
 
 Examples
   # send a file once

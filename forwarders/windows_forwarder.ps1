@@ -1,5 +1,5 @@
 <#
-  windows_forwarder.ps1 - stream a Windows PC's security events to LogWatch.
+  windows_forwarder.ps1 - stream a Windows PC's security events to TheLogWatch.
 
   Run in an ADMIN PowerShell (the Security log needs admin):
     powershell -ExecutionPolicy Bypass -File .\windows_forwarder.ps1 -Server https://logwatch-api.onrender.com -Key YOUR_INGEST_KEY

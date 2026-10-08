@@ -7,3 +7,5 @@ logwatch-export.json
 .DS_Store
 /.idea
 package-lock.json
+.playwright-mcp/
+.claude/launch.json

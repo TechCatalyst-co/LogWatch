@@ -1,10 +1,12 @@
-# LogWatch Cloud — "You vs. the Machine"
+# TheLogWatch Cloud — "You vs. the Machine"
 
-A hosted version of the LogWatch booth demo for CSF 2026 · *Connected lives, Protected futures*.
+A hosted version of TheLogWatch, the booth demo for CSF 2026 · *Connected lives, Protected futures*.
 
 - **Frontend** (the big-screen dashboard + visitor phone page) → **Netlify**
 - **Backend API** (log classifier, live stream, scenario player, AI digest) → **Render**
 - **Database** → **MongoDB Atlas** (free M0 cluster is plenty)
+
+<img src="frontend/assets/logo@2x.png" alt="TheLogWatch" width="380">
 
 > **Running the booth?** Students operating the demo should read the [TheLogWatch Operator's Guide](docs/USER_GUIDE.md).
 
@@ -25,7 +27,7 @@ A hosted version of the LogWatch booth demo for CSF 2026 · *Connected lives, Pr
    this is required; the strong DB password is what protects it.
 4. **Connect → Drivers** → copy the `mongodb+srv://...` string and put your password in it.
 
-LogWatch creates its collections and indexes on first start, including a TTL index that
+TheLogWatch creates its collections and indexes on first start, including a TTL index that
 **auto-deletes logs after 14 days** (`EVENT_TTL_DAYS`).
 
 ## 2 · Put the code on GitHub
