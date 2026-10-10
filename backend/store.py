@@ -45,6 +45,8 @@ class Store:
             self.events.create_index([("rx", DESCENDING)])
             self.events.create_index([("device", ASCENDING), ("rx", DESCENDING)])
             self.events.create_index([("scenario", ASCENDING)])
+            self.events.create_index([("rx", DESCENDING), ("id", DESCENDING)])
+            self.events.create_index([("device", ASCENDING), ("rx", DESCENDING), ("id", DESCENDING)])
             if self.ttl_days > 0:
                 self.events.create_index("created", expireAfterSeconds=int(self.ttl_days * 86400))
             self.known.create_index([("device", ASCENDING), ("mac", ASCENDING)], unique=True)
@@ -104,6 +106,23 @@ class Store:
 
     def all_events(self, limit=20000):
         return list(self.events.find({}, PUBLIC).sort("rx", ASCENDING).limit(limit))
+
+    def history(self, limit=250, device=None, source=None, alerts=False, before=None):
+        q = {}
+        if device:
+            q["device"] = device
+        if source:
+            q["source"] = source
+        if alerts:
+            q["level"] = {"$gte": 2}
+        if before:
+            rx, event_id = before
+            q["$or"] = [{"rx": {"$lt": rx}}, {"rx": rx, "id": {"$lt": event_id}}]
+        rows = list(self.events.find(q, PUBLIC).sort([("rx", DESCENDING), ("id", DESCENDING)]).limit(limit + 1))
+        more = len(rows) > limit
+        rows = rows[:limit]
+        cursor = [rows[-1]["rx"], rows[-1]["id"]] if more else None
+        return {"events": rows, "next": cursor}
 
     def device_list(self):
         return list(self.devices.find({}, {"_id": 0}).sort("last", DESCENDING).limit(200))

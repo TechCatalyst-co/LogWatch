@@ -20,6 +20,7 @@ import base64
 import hashlib
 import hmac
 import json
+import math
 import os
 import secrets
 import time
@@ -29,7 +30,7 @@ from datetime import datetime
 from pathlib import Path
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -220,6 +221,23 @@ async def state():
     return {"events": evs, "devices": devs, "counts": counts, "total": sum(counts.values()),
             "levels": LEVELS, "now_playing": player.now_playing, "ai": bool(API_KEY),
             "public_view": PUBLIC_VIEW}
+
+
+@app.get("/api/events", dependencies=[Depends(require_viewer)])
+async def event_history(device: str | None = None, source: str | None = None,
+                        alerts: bool = False, before: str | None = None,
+                        limit: int = Query(250, ge=1, le=400)):
+    cursor = None
+    if before is not None:
+        try:
+            cursor = json.loads(before)
+            if (not isinstance(cursor, list) or len(cursor) != 2
+                    or type(cursor[0]) not in (int, float) or not math.isfinite(cursor[0])
+                    or not isinstance(cursor[1], str)):
+                raise ValueError()
+        except (ValueError, TypeError):
+            raise HTTPException(400, "invalid history cursor")
+    return await asyncio.to_thread(store.history, limit, device, source, alerts, cursor)
 
 
 @app.get("/api/stream", dependencies=[Depends(require_viewer)])
