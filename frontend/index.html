@@ -360,7 +360,7 @@ const ICONS = {
 };
 const SRC_NAME = {router:"Router",windows:"Windows",phone:"Phone",browser:"Browser",linux:"Linux"};
 
-const S = { seen: new Set(), events: [], devices: {}, filter: "all", device: null, challenge: false, noise: false, lastIds: new Set() };
+const S = { seen: new Set(), events: [], total: 0, counts: [0,0,0,0], devices: {}, filter: "all", device: null, challenge: false, noise: false, lastIds: new Set() };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const chip = l => `<span class="pill p${l}">${ico("g"+l)}${LEVELS[l]}</span>`;
@@ -370,8 +370,8 @@ const ago = ts => { const s = Math.max(0, Date.now()/1000 - ts); return s<60 ? `
 
 // ------------------------------------------------------------------ rendering
 function renderKPIs(){
-  const c=[0,0,0,0]; S.events.forEach(e=>c[e.level]++);
-  const n = S.events.length, devs = Object.keys(S.devices).length;
+  const c=S.counts;
+  const n = S.total, devs = Object.keys(S.devices).length;
   const pct = n ? Math.round(100*c[0]/n) : 0;
   const t = (cls,lab,val,sub,l) => `<div class="kpi ${cls}"><div class="lab caps">${l!=null?stop(l):""}${lab}</div><div class="val">${val}</div><div class="sub">${sub}</div></div>`;
   $("kpis").innerHTML =
@@ -548,7 +548,7 @@ function flush(){
   timer=null; if(!pending.length) return;
   const ids=new Set(pending.map(e=>e.id));
   for(const e of pending){
-    S.events.push(e);
+    S.events.push(e); S.total++; S.counts[e.level]++;
     const d = S.devices[e.device] ??= {name:e.device, source:e.source, count:0, worst:0, last:0};
     d.count++; d.last=e.rx; d.worst=Math.max(d.worst,e.level);
   }
@@ -596,9 +596,14 @@ $("lForm").onsubmit = async e=>{
   }catch(err){ setLoginMsg(err.message==="Failed to fetch" ? "Can't reach the server. It may be waking up (free Render plans take ~1 min). Try again." : err.message, true); }
 };
 
+function applySnapshot(st){
+  pending=[];
+  S.events=st.events; S.seen=new Set(st.events.map(e=>e.id)); S.devices={}; st.devices.forEach(d=>S.devices[d.name]=d);
+  S.total=st.total; S.counts=[0,1,2,3].map(level=>st.counts[level]||0);
+}
 async function load(){
   const st = await api("/api/state");
-  S.events=st.events; S.seen=new Set(st.events.map(e=>e.id)); S.devices={}; st.devices.forEach(d=>S.devices[d.name]=d);
+  applySnapshot(st);
   $("bAI").title = st.ai ? "Send the raw logs to Claude for an independent read" : "No API key on the server: falls back to the rule-based digest";
   READONLY = !TOKEN; document.body.classList.toggle("readonly", READONLY);
   setPlaying(st.now_playing); renderAll(); await resetHistory();
@@ -614,15 +619,15 @@ function connect(){
   es.onerror=()=>{ $("dot").classList.add("off"); if(++sseFails>=3) startPolling(); };
   es.onmessage=m=>{ const d=JSON.parse(m.data);
     if(d.type==="event") queueEvent(d.event);
-    else if(d.type==="reset"){ S.events=[]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
+    else if(d.type==="reset"){ S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
     else if(d.type==="ping") setPlaying(d.now_playing);
   };
 }
 // Fallback if a proxy/network blocks streaming: poll every 3 s.
 function startPolling(){ if(pollTimer) return; pollTimer=setInterval(async()=>{
   try{ const st=await api("/api/state"); $("dot").classList.remove("off"); setPlaying(st.now_playing);
-    if(st.total < S.events.length){ S.events=[]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
-    st.events.forEach(e=>{ if(!S.seen.has(e.id)) queueEvent(e); });
+    if(st.total < S.total){ S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
+    applySnapshot(st); mergeHistory(st.events); renderAll();
   }catch{} },3000); }
 function stopPolling(){ clearInterval(pollTimer); pollTimer=null; }
 

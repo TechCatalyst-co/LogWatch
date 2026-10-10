@@ -11,7 +11,7 @@ function dashboard(history = false) {
   const elements = new Map();
   const get = id => {
     if (!elements.has(id)) elements.set(id, {
-      innerHTML: '', textContent: '', addEventListener() {},
+      innerHTML: '', textContent: '', children: [], addEventListener() {},
     });
     return elements.get(id);
   };
@@ -152,4 +152,24 @@ test('failed history requests display retry and retain loaded rows', async () =>
   d.run('api = async () => ({events:[],next:null})');
   await d.click('feed', '[data-history]');
   assert.doesNotMatch(d.get('feed').innerHTML, /Couldn't load log history/);
+});
+
+
+test('KPI totals use database counts rather than the 400-row snapshot', () => {
+  const d = dashboard();
+  d.run(`applySnapshot({events:S.events,devices:[],total:2758,counts:{0:2000,1:100,2:600,3:58}}); renderKPIs()`);
+  assert.match(d.get('kpis').innerHTML, /2,758/);
+  assert.match(d.get('kpis').innerHTML, /73% everyday housekeeping/);
+  assert.match(d.get('kpis').innerHTML, />600</);
+  assert.match(d.get('kpis').innerHTML, />58</);
+});
+
+test('live flush increments database totals while snapshot refresh does not double count', () => {
+  const d = dashboard();
+  d.run(`applySnapshot({events:[],devices:[],total:1000,counts:{0:1000}});
+    pending=[{id:'fresh',device:'RHEL',source:'linux',level:3,rx:1}]; flush(); renderKPIs();`);
+  assert.match(d.get('kpis').innerHTML, /1,001/);
+  d.run(`applySnapshot({events:S.events,devices:[],total:1001,counts:{0:1000,3:1}}); renderKPIs();`);
+  assert.match(d.get('kpis').innerHTML, /1,001/);
+  assert.doesNotMatch(d.get('kpis').innerHTML, /1,002/);
 });
