@@ -32,6 +32,31 @@ class HistoryTests(unittest.TestCase):
     def get(self, **params):
         return self.client.get('/api/events', params=params, headers=self.headers)
 
+    def test_snapshot_counts_all_retained_events_and_devices(self):
+        state = self.client.get('/api/state', headers=self.headers).json()
+        self.assertEqual(len(state['events']), 400)
+        self.assertEqual(state['total'], 650)
+        self.assertEqual(sum(state['counts'].values()), 650)
+        self.assertEqual(sum(d['count'] for d in state['devices']), 650)
+        self.assertEqual({d['name'] for d in state['devices']}, {'old', 'busy'})
+
+    def test_snapshot_ignores_stale_device_cache_after_expiration(self):
+        self.store.devices.insert_one({'name': 'expired', 'count': 999})
+        self.store.events.delete_many({'device': 'old'})
+        state = self.store.snapshot()
+        self.assertEqual(state['total'], 640)
+        self.assertEqual([d['name'] for d in state['devices']], ['busy'])
+        self.store.events.delete_many({})
+        self.assertEqual(self.store.snapshot(),
+                         {'events': [], 'devices': [], 'counts': {}, 'total': 0})
+
+    def test_snapshot_does_not_cap_device_count_at_200(self):
+        self.store.events.insert_many([
+            {'id': f'd{i}', 'device': f'device{i}', 'rx': 1000, 'source': 'linux', 'level': 0}
+            for i in range(205)
+        ])
+        self.assertEqual(len(self.store.snapshot()['devices']), 207)
+
     def test_device_outside_global_snapshot(self):
         self.assertFalse(any(e['device'] == 'old' for e in self.store.recent()))
         page = self.get(device='old').json()

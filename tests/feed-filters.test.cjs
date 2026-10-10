@@ -11,7 +11,7 @@ function dashboard(history = false) {
   const elements = new Map();
   const get = id => {
     if (!elements.has(id)) elements.set(id, {
-      innerHTML: '', textContent: '', children: [], addEventListener() {},
+      innerHTML: '', textContent: '', children: [], addEventListener() {}, classList: {remove() {}},
     });
     return elements.get(id);
   };
@@ -164,12 +164,40 @@ test('KPI totals use database counts rather than the 400-row snapshot', () => {
   assert.match(d.get('kpis').innerHTML, />58</);
 });
 
-test('live flush increments database totals while snapshot refresh does not double count', () => {
+test('live arrivals use authoritative counts, including delayed events outside the snapshot', async () => {
   const d = dashboard();
   d.run(`applySnapshot({events:[],devices:[],total:1000,counts:{0:1000}});
-    pending=[{id:'fresh',device:'RHEL',source:'linux',level:3,rx:1}]; flush(); renderKPIs();`);
-  assert.match(d.get('kpis').innerHTML, /1,001/);
-  d.run(`applySnapshot({events:S.events,devices:[],total:1001,counts:{0:1000,3:1}}); renderKPIs();`);
-  assert.match(d.get('kpis').innerHTML, /1,001/);
-  assert.doesNotMatch(d.get('kpis').innerHTML, /1,002/);
+    api = async () => ({events:[],devices:[{name:'RHEL',count:1000}],total:1000,counts:{0:1000}});
+    pending=[{id:'already-counted',device:'RHEL',source:'linux',level:0,rx:1}]; flush();`);
+  await d.run('Promise.resolve()');
+  assert.equal(d.run('S.total'), 1000);
+  assert.equal(d.run("S.devices.RHEL.count"), 1000);
+  d.run(`api = async () => ({events:[],devices:[],total:1405,counts:{0:1000,3:405}})`);
+  await d.run('refreshState()');
+  assert.equal(d.run('S.total'), 1405);
+  assert.equal(d.run('S.counts[3]'), 405);
+});
+
+test('refresh reconciles expiration and serializes concurrent requests', async () => {
+  const d = dashboard();
+  d.run(`applySnapshot({events:[],devices:[],total:1000,counts:{0:1000}});
+    var calls=0, finish;
+    api = () => {calls++; return new Promise(resolve => finish=resolve)};`);
+  const first = d.run('refreshState()');
+  await d.run('refreshState()');
+  assert.equal(d.run('calls'), 1);
+  d.run('finish({events:[],devices:[],total:0,counts:{}})');
+  await first;
+  assert.equal(d.run('S.total'), 0);
+  assert.equal(d.run('Object.keys(S.devices).length'), 0);
+});
+
+test('a response started before reset cannot restore old counts', async () => {
+  const d = dashboard();
+  d.run('var finish; api = () => new Promise(resolve => finish=resolve)');
+  const request = d.run('refreshState()');
+  d.run(`stateGeneration++; S.total=0;
+    finish({events:[],devices:[],total:999,counts:{0:999}})`);
+  await request;
+  assert.equal(d.run('S.total'), 0);
 });

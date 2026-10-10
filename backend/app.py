@@ -215,11 +215,8 @@ async def login(req: Request):
 
 @app.get("/api/state", dependencies=[Depends(require_viewer)])
 async def state():
-    evs, devs, counts = await asyncio.gather(
-        asyncio.to_thread(store.recent, 400),
-        asyncio.to_thread(store.device_list),
-        asyncio.to_thread(store.counts))
-    return {"events": evs, "devices": devs, "counts": counts, "total": sum(counts.values()),
+    snapshot = await asyncio.to_thread(store.snapshot)
+    return {**snapshot,
             "levels": LEVELS, "now_playing": player.now_playing, "ai": bool(API_KEY),
             "public_view": PUBLIC_VIEW}
 

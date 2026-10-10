@@ -304,7 +304,7 @@ body.readonly .join{display:none}
             </h3>
             <svg id="timeline" width="100%" height="120" role="img" aria-label="Each device as a line; each stop is a short time window coloured by its worst verdict"></svg>
           </div>
-          <div class="ch cats"><h3>By category</h3><div id="cats"></div></div>
+          <div class="ch cats"><h3 title="Counts for the recent logs loaded in this dashboard">By category · recent logs</h3><div id="cats"></div></div>
         </div>
       </div>
     </div>
@@ -547,13 +547,9 @@ function queueEvent(e){ if(S.seen.has(e.id)) return; S.seen.add(e.id); pending.p
 function flush(){
   timer=null; if(!pending.length) return;
   const ids=new Set(pending.map(e=>e.id));
-  for(const e of pending){
-    S.events.push(e); S.total++; S.counts[e.level]++;
-    const d = S.devices[e.device] ??= {name:e.device, source:e.source, count:0, worst:0, last:0};
-    d.count++; d.last=e.rx; d.worst=Math.max(d.worst,e.level);
-  }
+  S.events.push(...pending);
   if(S.events.length>3000) S.events=S.events.slice(-3000);
-  mergeHistory(pending); pending=[]; renderAll(ids);
+  mergeHistory(pending); pending=[]; renderAll(ids); refreshState();
 }
 
 // ------------------------------------------------------------------ server + login
@@ -598,7 +594,7 @@ $("lForm").onsubmit = async e=>{
 
 function applySnapshot(st){
   pending=[];
-  S.events=st.events; S.seen=new Set(st.events.map(e=>e.id)); S.devices={}; st.devices.forEach(d=>S.devices[d.name]=d);
+  S.events=st.events; S.seen=new Set(st.events.map(e=>e.id)); S.devices=Object.fromEntries(st.devices.map(d=>[d.name,d]));
   S.total=st.total; S.counts=[0,1,2,3].map(level=>st.counts[level]||0);
 }
 async function load(){
@@ -611,31 +607,39 @@ async function load(){
 
 function setPlaying(p){ $("playing").innerHTML = p ? `<b>Playing</b><i class=sep aria-hidden=true>·</i>${esc(p)}` : `<b>Live</b><i class=sep aria-hidden=true>·</i>listening for devices`; }
 
-let es=null, pollTimer=null, sseFails=0;
+let es=null, pollTimer=null, sseFails=0, stateGeneration=0;
 function connect(){
   if(es) es.close();
   es=new EventSource(API+"/api/stream"+(TOKEN?"?token="+encodeURIComponent(TOKEN):""));
-  es.onopen=()=>{ sseFails=0; $("dot").classList.remove("off"); stopPolling(); };
+  es.onopen=()=>{ sseFails=0; $("dot").classList.remove("off"); startPolling(); refreshState(); };
   es.onerror=()=>{ $("dot").classList.add("off"); if(++sseFails>=3) startPolling(); };
   es.onmessage=m=>{ const d=JSON.parse(m.data);
     if(d.type==="event") queueEvent(d.event);
-    else if(d.type==="reset"){ S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
+    else if(d.type==="reset"){ stateGeneration++; S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
     else if(d.type==="ping") setPlaying(d.now_playing);
   };
 }
-// Fallback if a proxy/network blocks streaming: poll every 3 s.
-function startPolling(){ if(pollTimer) return; pollTimer=setInterval(async()=>{
-  try{ const st=await api("/api/state"); $("dot").classList.remove("off"); setPlaying(st.now_playing);
-    if(st.total < S.total){ S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
+// Reconcile even with a healthy stream: TTL deletion and dropped messages have no event.
+let refreshingState=false;
+async function refreshState(){
+  if(refreshingState) return;
+  refreshingState=true;
+  const generation=stateGeneration;
+  try{ const st=await api("/api/state");
+    if(generation!==stateGeneration) return; $("dot").classList.remove("off"); setPlaying(st.now_playing);
+    const shrank=st.total < S.total;
     applySnapshot(st); mergeHistory(st.events); renderAll();
-  }catch{} },3000); }
+    if(shrank) await resetHistory();
+  }catch{} finally{ refreshingState=false; }
+}
+function startPolling(){ if(!pollTimer) pollTimer=setInterval(refreshState,3000); }
 function stopPolling(){ clearInterval(pollTimer); pollTimer=null; }
 
 async function boot(){
   try{
     const h = await fetch(API+"/api/health").then(r=>r.json());
     if(!TOKEN && !h.public_view) return showLogin(h.login ? "" : "The server has no ADMIN_PASSWORD set yet.");
-    await load(); connect();
+    await load(); startPolling(); connect();
   }catch(err){
     if(err.message!=="login required"){ $("playing").innerHTML="<b>Offline</b><i class=sep aria-hidden=true>·</i>can't reach the server, retrying…"; setTimeout(boot,5000); }
   }

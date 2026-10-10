@@ -124,6 +124,27 @@ class Store:
         cursor = [rows[-1]["rx"], rows[-1]["id"]] if more else None
         return {"events": rows, "next": cursor}
 
+    def snapshot(self):
+        # One pipeline derives every dashboard total from the retained events.
+        # The devices collection is a lifetime cache and cannot reflect TTL deletion.
+        result = next(iter(self.events.aggregate([{"$facet": {
+            "events": [{"$sort": {"rx": -1, "id": -1}}, {"$limit": 400},
+                       {"$project": PUBLIC}],
+            "counts": [{"$group": {"_id": "$level", "n": {"$sum": 1}}}],
+            "devices": [
+                {"$group": {"_id": "$device", "source": {"$first": "$source"},
+                            "count": {"$sum": 1}, "worst": {"$max": "$level"},
+                            "first": {"$min": "$rx"}, "last": {"$max": "$rx"},
+                            "alerts": {"$sum": {"$cond": [{"$gte": ["$level", 2]}, 1, 0]}}}},
+                {"$project": {"_id": 0, "name": "$_id", "source": 1, "count": 1,
+                              "worst": 1, "first": 1, "last": 1, "alerts": 1}},
+                {"$sort": {"last": -1}},
+            ],
+        }}])))
+        counts = {str(row["_id"]): row["n"] for row in result["counts"]}
+        return {"events": list(reversed(result["events"])), "devices": result["devices"],
+                "counts": counts, "total": sum(counts.values())}
+
     def device_list(self):
         return list(self.devices.find({}, {"_id": 0}).sort("last", DESCENDING).limit(200))
 
