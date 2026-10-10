@@ -28,6 +28,7 @@ from contextlib import asynccontextmanager
 from collections import Counter, defaultdict, deque
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
@@ -224,8 +225,8 @@ async def state():
 
 
 @app.get("/api/events", dependencies=[Depends(require_viewer)])
-async def event_history(device: str | None = None, source: str | None = None,
-                        alerts: bool = False, before: str | None = None,
+async def event_history(device: Optional[str] = None, source: Optional[str] = None,
+                        alerts: bool = False, before: Optional[str] = None,
                         limit: int = Query(250, ge=1, le=400)):
     cursor = None
     if before is not None:

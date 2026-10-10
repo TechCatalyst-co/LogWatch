@@ -457,7 +457,7 @@ function renderFeed(newIds){
 }
 
 function renderFilters(){
-  const srcs = [...new Set([...Object.values(S.devices).map(d=>d.source), ...S.events.map(e=>e.source)])];
+  const srcs = [...new Set([...Object.values(S.devices).map(d=>d.source), ...S.events.map(e=>e.source), ...H.events.map(e=>e.source)])];
   if(S.filter !== "all" && S.filter !== "alerts" && !srcs.includes(S.filter)) S.filter="all";
   const opts = [["all","All"],["alerts","Worth a look +"],...srcs.map(s=>[s,SRC_NAME[s]||s])];
   $("filters").innerHTML = opts.map(([k,l])=>{ const active=S.filter===k && (k!=="all" || !S.device);

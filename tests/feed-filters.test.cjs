@@ -82,12 +82,12 @@ test('a filtered empty feed explains the filter and offers a working recovery', 
   assert.match(d.get('feed').innerHTML, /data-id="router"/);
 });
 
-test('source filters that disappear cannot remain invisibly active', () => {
+test('source filters remain available for history outside the live snapshot', () => {
   const d = dashboard();
   d.click('filters', 'button', { f: 'router' });
   d.run('S.events=S.events.filter(e => e.source === "linux"); renderAll()');
-  assert.match(d.get('feed').innerHTML, /data-id="linux"/);
-  assert.match(d.get('filters').innerHTML, /data-f="all" aria-pressed="true"/);
+  assert.match(d.get('feed').innerHTML, /data-id="router"/);
+  assert.match(d.get('filters').innerHTML, /data-f="router" aria-pressed="true"/);
 });
 
 test('device toggle and clear chip both restore the full feed', () => {
