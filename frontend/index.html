@@ -420,14 +420,18 @@ function rowHTML(e, isNew){
 function renderFeed(newIds){
   const vis = S.events.filter(passes).slice(-250).reverse();
   $("feed").innerHTML = vis.length ? vis.map(e=>rowHTML(e, newIds && newIds.has(e.id))).join("")
+    : S.device || S.filter !== "all"
+    ? `<div class="empty"><b>No matching logs</b>No loaded logs match this filter. <button class="btn" data-clear-filters="1">Show all logs</button></div>`
     : `<div class="empty"><b>Waiting for logs…</b>Every line a device writes will appear here, translated.</div>`;
   $("feedNote").textContent = S.device ? `showing ${S.device}` : "";
 }
 
 function renderFilters(){
   const srcs = [...new Set(S.events.map(e=>e.source))];
+  if(S.filter !== "all" && S.filter !== "alerts" && !srcs.includes(S.filter)) S.filter="all";
   const opts = [["all","All"],["alerts","Worth a look +"],...srcs.map(s=>[s,SRC_NAME[s]||s])];
-  $("filters").innerHTML = opts.map(([k,l])=>`<button class="f ${S.filter===k?"on":""}" data-f="${k}">${l}</button>`).join("")
+  $("filters").innerHTML = opts.map(([k,l])=>{ const active=S.filter===k && (k!=="all" || !S.device);
+    return `<button class="f ${active?"on":""}" data-f="${esc(k)}" aria-pressed="${active}">${esc(l)}</button>`; }).join("")
     + (S.device?`<button class="f on" data-clear="1" aria-label="Clear device filter ${esc(S.device)}">${ico("x")}${esc(S.device)}</button>`:"");
 }
 
@@ -580,14 +584,14 @@ function connect(){
   es.onerror=()=>{ $("dot").classList.add("off"); if(++sseFails>=3) startPolling(); };
   es.onmessage=m=>{ const d=JSON.parse(m.data);
     if(d.type==="event") queueEvent(d.event);
-    else if(d.type==="reset"){ S.events=[]; S.seen=new Set(); S.devices={}; S.device=null; renderAll(); }
+    else if(d.type==="reset"){ S.events=[]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; renderAll(); }
     else if(d.type==="ping") setPlaying(d.now_playing);
   };
 }
 // Fallback if a proxy/network blocks streaming: poll every 3 s.
 function startPolling(){ if(pollTimer) return; pollTimer=setInterval(async()=>{
   try{ const st=await api("/api/state"); $("dot").classList.remove("off"); setPlaying(st.now_playing);
-    if(st.total < S.events.length){ S.events=[]; S.seen=new Set(); S.devices={}; }
+    if(st.total < S.events.length){ S.events=[]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; renderAll(); }
     st.events.forEach(e=>{ if(!S.seen.has(e.id)) queueEvent(e); });
   }catch{} },3000); }
 function stopPolling(){ clearInterval(pollTimer); pollTimer=null; }
@@ -689,10 +693,12 @@ $("bDigest").onclick=()=>showDigest("rules");
 $("bAI").onclick=()=>showDigest("ai");
 
 // feed & device interactions
+function selectFeedFilter(filter){ S.filter=filter; S.device=null; renderAll(); }
+function selectDevice(name){ S.device=S.device===name ? null : name; S.filter="all"; renderAll(); }
 $("alerts").onclick=e=>{ if(e.target.closest("#bMore")){ S.allAlerts=true; renderAlerts(); } };
-$("feed").onclick=e=>{ const r=e.target.closest(".row"); if(r) r.classList.toggle("open"); };
-$("filters").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; if(b.dataset.clear) S.device=null; else S.filter=b.dataset.f; renderAll(); };
-$("devices").onclick=e=>{ const d=e.target.closest(".dev"); if(!d) return; S.device = S.device===d.dataset.dev ? null : d.dataset.dev; renderAll(); };
+$("feed").onclick=e=>{ if(e.target.closest("[data-clear-filters]")) return selectFeedFilter("all"); const r=e.target.closest(".row"); if(r) r.classList.toggle("open"); };
+$("filters").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; selectFeedFilter(b.dataset.clear ? "all" : b.dataset.f); };
+$("devices").onclick=e=>{ const d=e.target.closest(".dev"); if(d) selectDevice(d.dataset.dev); };
 
 // tooltips
 const tip=$("tip");
