@@ -7,7 +7,7 @@ const path = require('node:path');
 const html = fs.readFileSync(path.join(__dirname, '../frontend/index.html'), 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 
-function dashboard() {
+function dashboard(history = false) {
   const elements = new Map();
   const get = id => {
     if (!elements.has(id)) elements.set(id, {
@@ -17,7 +17,7 @@ function dashboard() {
   };
   const context = vm.createContext({
     document: { getElementById: get }, window: {},
-    setInterval() {}, addEventListener() {},
+    setInterval() {}, addEventListener() {}, URLSearchParams,
   });
   // Run the actual dashboard script without starting network connections/timers.
   vm.runInContext(script.replace(/\nboot\(\);/, '\n'), context);
@@ -28,8 +28,10 @@ function dashboard() {
       {id:'linux', device:'RHEL', source:'linux', level:3, ts:2},
     ];
     rowHTML = e => '<div data-id="' + e.id + '"></div>';
+    mergeHistory(S.events);
     renderAll();
   `, context);
+  if (!history) vm.runInContext('resetHistory = () => { H.events=S.events.filter(passes); renderAll(); };', context);
   return {
     get,
     run: code => vm.runInContext(code, context),
@@ -47,7 +49,7 @@ test('All clears a selected device and shows logs from every source', () => {
   d.click('filters', 'button', { f: 'all' });
   assert.match(d.get('feed').innerHTML, /data-id="linux"/);
   assert.match(d.get('feed').innerHTML, /data-id="router"/);
-  assert.equal(d.get('feedNote').textContent, '');
+  assert.doesNotMatch(d.get('feedNote').textContent, /Booth router/);
 });
 
 test('selecting a device clears an incompatible source or severity filter', () => {
@@ -66,7 +68,7 @@ test('source and severity buttons apply globally after selecting a device', () =
     d.click('devices', '.dev', { dev: 'Booth router' });
     d.click('filters', 'button', { f: filter });
     assert.match(d.get('feed').innerHTML, /data-id="linux"/);
-    assert.equal(d.get('feedNote').textContent, '');
+    assert.doesNotMatch(d.get('feedNote').textContent, /Booth router/);
   }
 });
 
@@ -101,6 +103,53 @@ test('device toggle and clear chip both restore the full feed', () => {
 
 test('an unfiltered empty feed retains its waiting state', () => {
   const d = dashboard();
-  d.run('S.events=[]; renderAll()');
+  d.run('S.events=[]; H.events=[]; renderAll()');
   assert.match(d.get('feed').innerHTML, /Waiting for logs/);
+});
+
+
+test('device history requests stored logs outside the latest global snapshot', async () => {
+  const d = dashboard(true);
+  d.run(`api = async path => {
+    if(!path.includes('device=Older+device')) throw new Error('missing device');
+    return {events:[{id:'old',device:'Older device',source:'linux',rx:0}],next:[0,'old']};
+  }; selectDevice('Older device');`);
+  await d.run('Promise.resolve()');
+  assert.match(d.get('feed').innerHTML, /data-id="old"/);
+  assert.match(d.get('feed').innerHTML, /Load older logs/);
+});
+
+test('pagination keeps earlier rows and deduplicates overlapping live arrivals', async () => {
+  const d = dashboard(true);
+  d.run(`H.next=[1,'linux']; api = async path => {
+    if(!path.includes('before=')) throw new Error('missing cursor');
+    return {events:[{id:'linux',source:'linux',rx:1},{id:'older',source:'linux',rx:0}],next:null};
+  };`);
+  await d.run('loadHistory()');
+  assert.equal((d.get('feed').innerHTML.match(/data-id="linux"/g)||[]).length, 1);
+  assert.match(d.get('feed').innerHTML, /data-id="older"/);
+  assert.match(d.get('feed').innerHTML, /data-id="router"/);
+  assert.doesNotMatch(d.get('feed').innerHTML, /Load older logs/);
+});
+
+test('late responses from a previous device selection are ignored', async () => {
+  const d = dashboard(true);
+  d.run(`var finishOld; api = () => new Promise(resolve => {finishOld=resolve}); selectDevice('Old');`);
+  d.run(`api = async () => ({events:[{id:'new',device:'New',rx:1}],next:null}); selectDevice('New');`);
+  await d.run('Promise.resolve()');
+  d.run(`finishOld({events:[{id:'stale',device:'Old',rx:0}],next:null})`);
+  await d.run('Promise.resolve()');
+  assert.match(d.get('feed').innerHTML, /data-id="new"/);
+  assert.doesNotMatch(d.get('feed').innerHTML, /stale/);
+});
+
+test('failed history requests display retry and retain loaded rows', async () => {
+  const d = dashboard(true);
+  d.run('api = async () => {throw new Error("offline")}');
+  await d.run('loadHistory()');
+  assert.match(d.get('feed').innerHTML, /Couldn't load log history/);
+  assert.match(d.get('feed').innerHTML, /data-id="linux"/);
+  d.run('api = async () => ({events:[],next:null})');
+  await d.click('feed', '[data-history]');
+  assert.doesNotMatch(d.get('feed').innerHTML, /Couldn't load log history/);
 });
