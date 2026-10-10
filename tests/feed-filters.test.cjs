@@ -27,6 +27,7 @@ function dashboard(history = false) {
       {id:'router', device:'Booth router', source:'router', level:0, ts:1},
       {id:'linux', device:'RHEL', source:'linux', level:3, ts:2},
     ];
+    originalRowHTML = rowHTML;
     rowHTML = e => '<div data-id="' + e.id + '"></div>';
     mergeHistory(S.events);
     renderAll();
@@ -36,7 +37,7 @@ function dashboard(history = false) {
     get,
     run: code => vm.runInContext(code, context),
     click: (id, selector, dataset = {}) => get(id).onclick({
-      target: { closest: query => query === selector ? { dataset } : null },
+      target: { closest: query => query === selector ? { dataset, classList: { toggle() {} } } : null },
     }),
   };
 }
@@ -200,4 +201,29 @@ test('a response started before reset cannot restore old counts', async () => {
     finish({events:[],devices:[],total:999,counts:{0:999}})`);
   await request;
   assert.equal(d.run('S.total'), 0);
+});
+
+test('expanded logs survive polling, live arrivals, and pagination until clicked closed', async () => {
+  const d = dashboard(true);
+  d.run('rowHTML = originalRowHTML; renderFeed()');
+  const isOpen = id => new RegExp('class="[^"]*\\bopen\\b[^"]*" data-id="' + id + '"').test(d.get('feed').innerHTML);
+  d.click('feed', '.row', {id:'router'});
+  d.click('feed', '.row', {id:'linux'});
+  d.run('api = async () => ({events:S.events,devices:[],total:2,counts:{0:1,3:1}})');
+  await d.run('refreshState()');
+  assert.ok(isOpen('router'));
+  assert.ok(isOpen('linux'));
+  d.run("pending=[{id:'incoming',source:'linux',level:0,ts:3,rx:3}]; flush()");
+  await d.run('Promise.resolve()');
+  assert.ok(isOpen('router'));
+  assert.ok(isOpen('linux'));
+  assert.ok(!isOpen('incoming'));
+  d.run("api = async () => ({events:[{id:'older',source:'linux',level:0,ts:0,rx:0}],next:null})");
+  await d.run('loadHistory()');
+  assert.ok(isOpen('router'));
+  assert.ok(isOpen('linux'));
+  d.click('feed', '.row', {id:'router'});
+  d.run('renderFeed()');
+  assert.ok(!isOpen('router'));
+  assert.ok(isOpen('linux'));
 });

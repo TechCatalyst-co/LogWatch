@@ -360,7 +360,7 @@ const ICONS = {
 };
 const SRC_NAME = {router:"Router",windows:"Windows",phone:"Phone",browser:"Browser",linux:"Linux"};
 
-const S = { seen: new Set(), events: [], total: 0, counts: [0,0,0,0], devices: {}, filter: "all", device: null, challenge: false, noise: false, lastIds: new Set() };
+const S = { expanded: new Set(), seen: new Set(), events: [], total: 0, counts: [0,0,0,0], devices: {}, filter: "all", device: null, challenge: false, noise: false, lastIds: new Set() };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const chip = l => `<span class="pill p${l}">${ico("g"+l)}${LEVELS[l]}</span>`;
@@ -406,7 +406,7 @@ function passes(e){
 }
 
 function rowHTML(e, isNew){
-  return `<div class="row lv${e.level} ${isNew?"new":""}" data-id="${e.id}">
+  return `<div class="row lv${e.level} ${isNew?"new":""} ${S.expanded.has(String(e.id))?"open":""}" data-id="${e.id}">
     <div class="tm">${hhmm(e.ts)}</div>
     <div class="verdict">${chip(e.level)}</div>
     <div style="min-width:0">
@@ -615,7 +615,7 @@ function connect(){
   es.onerror=()=>{ $("dot").classList.add("off"); if(++sseFails>=3) startPolling(); };
   es.onmessage=m=>{ const d=JSON.parse(m.data);
     if(d.type==="event") queueEvent(d.event);
-    else if(d.type==="reset"){ stateGeneration++; S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
+    else if(d.type==="reset"){ stateGeneration++; S.expanded.clear(); S.events=[]; S.total=0; S.counts=[0,0,0,0]; S.seen=new Set(); S.devices={}; S.device=null; S.filter="all"; pending=[]; renderAll(); resetHistory(); }
     else if(d.type==="ping") setPlaying(d.now_playing);
   };
 }
@@ -735,7 +735,7 @@ $("bAI").onclick=()=>showDigest("ai");
 function selectFeedFilter(filter){ S.filter=filter; S.device=null; resetHistory(); renderAll(); }
 function selectDevice(name){ S.device=S.device===name ? null : name; S.filter="all"; resetHistory(); renderAll(); }
 $("alerts").onclick=e=>{ if(e.target.closest("#bMore")){ S.allAlerts=true; renderAlerts(); } };
-$("feed").onclick=e=>{ if(e.target.closest("[data-history]")) return loadHistory(); if(e.target.closest("[data-clear-filters]")) return selectFeedFilter("all"); const r=e.target.closest(".row"); if(r) r.classList.toggle("open"); };
+$("feed").onclick=e=>{ if(e.target.closest("[data-history]")) return loadHistory(); if(e.target.closest("[data-clear-filters]")) return selectFeedFilter("all"); const r=e.target.closest(".row"); if(r){ const id=r.dataset.id; const open=!S.expanded.has(id); if(open) S.expanded.add(id); else S.expanded.delete(id); r.classList.toggle("open",open); } };
 $("filters").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; selectFeedFilter(b.dataset.clear ? "all" : b.dataset.f); };
 $("devices").onclick=e=>{ const d=e.target.closest(".dev"); if(d) selectDevice(d.dataset.dev); };
 
