@@ -608,20 +608,24 @@ $("bConnect").onclick = async ()=>{
   const phone = new URL("phone.html", location.href); if(key) phone.searchParams.set("k", key);
   const ingest = (API||location.origin)+"/api/ingest";
   let qr=""; try{ const q=qrcode(0,"M"); q.addData(phone.href); q.make(); qr=q.createSvgTag({cellSize:7,margin:2}); }catch{}
+  const MASK="••••••••••••", sk=()=>key?`<span class="sk" data-v="${esc(key)}">${MASK}</span>`:"YOUR_INGEST_KEY";
   modal("Connect devices", `
     <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
       <div style="background:#fff;border-radius:10px;padding:6px;line-height:0">${qr||'<div style="color:#000;padding:20px;line-height:1.4">QR code needs internet</div>'}</div>
-      <div style="flex:1;min-width:240px"><h3>Visitors' phones</h3><p>Scan to open the phone page. They choose what to send; nothing is read automatically.</p><code style="word-break:break-all;font:12px var(--mono)">${esc(phone.href)}</code></div>
+      <div style="flex:1;min-width:240px"><h3>Visitors' phones</h3><p>Scan to open the phone page. They choose what to send; nothing is read automatically.</p><code style="word-break:break-all;font:12px var(--mono)">${esc(phone.origin+phone.pathname)}${key?"?k="+sk():""}</code></div>
     </div>
     ${key?"":`<div class="note" style="margin-top:14px">No INGEST_KEY is set on the server, so devices can't send logs yet. Add one in Render → Environment.</div>`}
-    <h3 style="margin-top:18px">Routers, Raspberry Pis, Windows</h3>
+    <h3 style="margin-top:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">Routers, Raspberry Pis, Windows${key?` <button class="btn" id="bKey" aria-pressed="false" style="margin-left:auto">Show key</button>`:""}</h3>
     <p>Cloud servers can't receive router syslog directly, so run the <b>relay</b> on the booth laptop and point devices at the laptop:</p>
-    <pre>python3 syslog_relay.py --server ${esc(API||location.origin)} --key ${esc(key||"YOUR_INGEST_KEY")}</pre>
+    <pre>python3 syslog_relay.py --server ${esc(API||location.origin)} --key ${sk()}</pre>
     <p>Windows PC (admin PowerShell):</p>
-    <pre>.\\windows_forwarder.ps1 -Server ${esc(API||location.origin)} -Key ${esc(key||"YOUR_INGEST_KEY")}</pre>
+    <pre>.\\windows_forwarder.ps1 -Server ${esc(API||location.origin)} -Key ${sk()}</pre>
     <p>Anything else (curl):</p>
-    <pre>curl -X POST "${esc(ingest)}?source=router&amp;device=My%20router" -H "X-Ingest-Key: ${esc(key||"YOUR_INGEST_KEY")}" --data-binary @router.log</pre>
+    <pre>curl -X POST "${esc(ingest)}?source=router&amp;device=My%20router" -H "X-Ingest-Key: ${sk()}" --data-binary @router.log</pre>
     <p style="margin-top:18px"><button class="btn" id="bLogout">Sign out</button> <button class="btn" id="bExport">Download all logs (JSON)</button></p>`);
+  if(key) $("bKey").onclick=e=>{ const show=e.currentTarget.getAttribute("aria-pressed")!=="true";
+    e.currentTarget.setAttribute("aria-pressed",show); e.currentTarget.textContent=show?"Hide key":"Show key";
+    document.querySelectorAll("#mBody .sk").forEach(s=>s.textContent=show?s.dataset.v:MASK); };
   $("bLogout").onclick=()=>{ saveToken(""); location.reload(); };
   $("bExport").onclick=async()=>{ const r=await fetch(API+"/api/export",{headers:{Authorization:"Bearer "+TOKEN}}); const b=await r.blob();
     const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="thelogwatch-export.json"; a.click(); };
