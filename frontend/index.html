@@ -30,7 +30,10 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:15px/1
 button,select,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 svg.i{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-.app{display:grid;grid-template-rows:auto auto 1fr;height:100vh;gap:14px;padding:16px 20px 18px}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;height:100vh;gap:14px;padding:16px 20px 18px}
+.site-footer{text-align:center;color:var(--ink-3);font-size:13px}
+.site-footer a{color:var(--ink-2);text-underline-offset:3px}
+.site-footer a:hover{color:var(--ink)}
 .caps{text-transform:uppercase;letter-spacing:.09em;font-weight:700}
 
 /* ---------- header */
@@ -309,6 +312,7 @@ body.readonly .join{display:none}
       </div>
     </div>
   </main>
+  <footer class="site-footer">Powered by <a href="https://techcatalyst.co">TechCatalyst</a></footer>
 </div>
 
 <div class="tip" id="tip"></div>
