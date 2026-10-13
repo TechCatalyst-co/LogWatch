@@ -9,3 +9,4 @@ logwatch-export.json
 package-lock.json
 .playwright-mcp/
 .claude/launch.json
+backend/.env.example

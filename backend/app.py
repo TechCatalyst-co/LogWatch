@@ -410,6 +410,21 @@ async def digest(device: str = "", scenario: str = "", mode: str = "rules"):
         text = await ai_digest(evs)
         await asyncio.to_thread(store.ai_put, key, text)
         return {"mode": "ai", "text": text}
+    except httpx.HTTPStatusError as ex:
+        detail = ""
+        try:
+            error = ex.response.json().get("error", {})
+            if isinstance(error, dict) and isinstance(error.get("message"), str):
+                detail = error["message"]
+        except (ValueError, AttributeError):
+            pass
+        # Only expose the provider's message, never request headers or a raw response.
+        if API_KEY:
+            detail = detail.replace(API_KEY, "[redacted]")
+        detail = " ".join(detail.split())[:500]
+        reason = f": {detail}" if detail else ""
+        return {"mode": "rules", "note": f"Anthropic rejected the AI request (HTTP {ex.response.status_code}){reason} - showing the rule-based digest.",
+                "text": rules_digest(allv, title)}
     except Exception as ex:
         return {"mode": "rules", "note": f"AI unreachable ({type(ex).__name__}) - showing the rule-based digest.",
                 "text": rules_digest(allv, title)}
